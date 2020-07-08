@@ -1,0 +1,1 @@
+Simulink.sdi.clearAllSubPlots;
