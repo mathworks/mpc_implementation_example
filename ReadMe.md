@@ -33,12 +33,11 @@
 MPCについて初学者であり、以下の資料を見ていない場合は、本サンプルモデルより先に以下の資料に目を通しておくこと。
 
 
-### ビデオ
+### ビデオ 
 
-   -  モデル予測制御（MPC）とは？  
-   -      [Part1 ～ 基本的な考え方](https://www.youtube.com/watch?v=i68MkFz9L38) 
-   -      [Part2 ～ Model Predictive Control Toolbox例題](https://www.youtube.com/watch?v=47LzXHOXwtU) 
-   -      [応用 ～ アダプティブ・クルーズ・コントロールとセンサーフュージョン](https://www.youtube.com/watch?v=Nb3aTJ8Wgk8) 
+   -  [モデル予測制御（MPC）とは？ Part1 ～ 基本的な考え方](https://www.youtube.com/watch?v=i68MkFz9L38) 
+   -  [モデル予測制御（MPC）とは？ Part2 ～ Model Predictive Control Toolbox例題](https://www.youtube.com/watch?v=47LzXHOXwtU) 
+   -  [応用 ～ アダプティブ・クルーズ・コントロールとセンサーフュージョン](https://www.youtube.com/watch?v=Nb3aTJ8Wgk8) 
    -  [モデル予測制御（MPC）入門](https://jp.mathworks.com/videos/cda-model-predictive-control-90293.html) 
    -  [Understanding Model Predictive Control](https://jp.mathworks.com/videos/series/understanding-model-predictive-control.html) 
 
