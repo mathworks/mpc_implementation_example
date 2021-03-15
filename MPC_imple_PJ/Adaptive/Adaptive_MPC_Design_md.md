@@ -463,8 +463,14 @@ mpcObj = mpc(dsys)
 
 
 ```text:Output
+-->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
+-->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
+-->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
+-->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
+-->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
+   for output(s) y1 y2 and zero weight for output(s) y3 y4 y5 
  
-MPC object (created on 02-Oct-2020 19:26:00):
+MPC object (created on 12-Mar-2021 09:43:19):
 ---------------------------------------------
 Sampling time:      0.02 (seconds)
 Prediction Horizon: 10
@@ -548,6 +554,16 @@ sim(model_name);
 ```
 
 
+```text:Output
+   測定出力チャネル #1 に外乱が追加されていないと仮定します。
+   測定出力チャネル #2 に外乱が追加されていないと仮定します。
+-->測定出力チャネル #5 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->測定出力チャネル #3 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->測定出力チャネル #4 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
+```
+
+
 
 結果の表示
 
@@ -564,26 +580,14 @@ plot_vehicle_result_in_SDI;
 
 
 
-線形MPCと同様にチューニングを行うことができる。98から104行目のコメントアウトされている部分を有効にして、応答が変わることを確認すること。
+線形MPCと同様にチューニングを行うことができる。% チューニングと書かれている箇所のコメントアウトされている部分を有効にして、応答が変わることを確認すること。
 
 
-  
 
 
 一方で、シナリオ"regular_circle_turn_vehicle"は定常円旋回を行うシナリオである。以下のように、回転を続ける位置指令値に対して、一定距離を保ちながら追い続ける動作をする。
 
 
-
-
-![image_1.png](Adaptive_MPC_Design_md_images/image_1.png)
-
-
-
-
-この図はシミュレーションデータインスペクターのXYプロットを用いて作成することができる。
-
-
-  
 
 
 シナリオ"turn_vehicle"は、直進と旋回を繰り返し行うシナリオである。各自で実行し、結果をXYプロットなどを用いて確認すること。
@@ -634,22 +638,17 @@ compare_previous_run;
 
 
 
+![image_1.png](Adaptive_MPC_Design_md_images/image_1.png)
+
+
+
+
 ![image_2.png](Adaptive_MPC_Design_md_images/image_2.png)
 
 
 
 
-![image_3.png](Adaptive_MPC_Design_md_images/image_3.png)
-
-
-
-
-![image_4.png](Adaptive_MPC_Design_md_images/image_4.png)
-
-
-
-
-1ステップ当たりの平均計算時間は39.96ms、CPU使用率は196.8%である。
+1ステップ当たりの平均計算時間は39.4ms、CPU使用率は197.4%である。
 
 
 
@@ -659,7 +658,7 @@ compare_previous_run;
 
 
 
-![image_5.png](Adaptive_MPC_Design_md_images/image_5.png)
+![image_3.png](Adaptive_MPC_Design_md_images/image_3.png)
 
 
 

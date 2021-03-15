@@ -17,6 +17,9 @@ delete('*.*');
 
 %% Terminate
 cd(proj.RootFolder);
+
+allDocs = matlab.desktop.editor.getAll;
+allDocs.close;
 clear all;
 bdclose all;
 clc;

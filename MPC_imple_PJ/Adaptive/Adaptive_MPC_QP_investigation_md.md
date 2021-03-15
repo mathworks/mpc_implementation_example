@@ -151,7 +151,7 @@ if (solverType == 1)
 else
     % QPソルバーを内点法に指定する
     mpcObj.Optimizer.Algorithm = 'interior-point';
-    mpcObj.Optimizer.InteriorPointOptions.MaxIterations = 8;
+    mpcObj.Optimizer.InteriorPointOptions.MaxIterations = 10;
     mpcobjSub.Optimizer.UseSuboptimalSolution = true;
 end
 
@@ -313,12 +313,7 @@ compare_previous_run;
 
 
 
-![image_4.png](Adaptive_MPC_QP_investigation_md_images/image_4.png)
-
-
-
-
-1ステップ当たりの平均計算時間は41.91ms、CPU使用率は209.6%である。アクティブセット法と比較して、計算時間にあまり差はないことが分かる。
+1ステップ当たりの平均計算時間は42.7ms、CPU使用率は213.7%である。アクティブセット法と比較して、計算時間にあまり差はないことが分かる。
 
 
 
@@ -328,7 +323,7 @@ compare_previous_run;
 
 
 
-![image_5.png](Adaptive_MPC_QP_investigation_md_images/image_5.png)
+![image_4.png](Adaptive_MPC_QP_investigation_md_images/image_4.png)
 
 
 

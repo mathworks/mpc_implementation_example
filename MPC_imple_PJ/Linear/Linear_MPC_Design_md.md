@@ -110,7 +110,7 @@ plant_ss =
  
   B = 
              u1
-   x1  0.007813
+   x1  0.007812
    x2         0
  
   C = 
@@ -150,7 +150,7 @@ plant_ss_indist =
  
   B = 
              u1        u2
-   x1  0.007813         1
+   x1  0.007812         1
    x2         0         0
  
   C = 
@@ -199,7 +199,7 @@ mpcObj = mpc(plant_ss_indist, ts)
 -->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
 -->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
  
-MPC object (created on 02-Oct-2020 19:12:21):
+MPC object (created on 12-Mar-2021 08:41:36):
 ---------------------------------------------
 Sampling time:      0.01 (seconds)
 Prediction Horizon: 30
@@ -423,12 +423,7 @@ PIL検証の手順は使用する環境に依存しているため、本節で�
 
 
 
-![image_3.png](Linear_MPC_Design_md_images/image_3.png)
-
-
-
-
-1ステップ当たりの平均計算時間は625μs、CPU使用率は5.249%である。
+1ステップ当たりの平均計算時間は574μs、CPU使用率は5.74%である。
 
 
 
@@ -438,7 +433,7 @@ PIL検証の手順は使用する環境に依存しているため、本節で�
 
 
 
-![image_4.png](Linear_MPC_Design_md_images/image_4.png)
+![image_3.png](Linear_MPC_Design_md_images/image_3.png)
 
 
 

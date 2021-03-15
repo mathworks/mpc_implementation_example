@@ -105,11 +105,11 @@ Multiple MPCは、非線形モデルを動作点ごとに線形化し、それ�
 
 
 ```matlab:Code
-op_pattern = [{[0; 1]}; {[0; 2]};
-    {[pi/2; 1]}; {[pi/2; 2]};
-    {[pi; 1]}; {[pi; 2]};
-    {[-pi/2; 1]}; {[-pi/2; 2]};
-    ];
+% op_pattern = [{[0; 1]}; {[0; 2]};
+%     {[pi/2; 1]}; {[pi/2; 2]};
+%     {[pi; 1]}; {[pi; 2]};
+%     {[-pi/2; 1]}; {[-pi/2; 2]};
+%     ];
 ```
 
 
@@ -149,9 +149,9 @@ end
 sys_pattern
 ```
 
-| |1|2|3|4|5|6|7|8|
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-|1|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|
+| |1|2|3|4|
+|:--:|:--:|:--:|:--:|:--:|
+|1|5x2 ss|5x2 ss|5x2 ss|5x2 ss|
 
 
 
@@ -194,9 +194,9 @@ end
 mpcObj_multi
 ```
 
-| |1|2|3|4|5|6|7|8|
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-|1|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|
+| |1|2|3|4|
+|:--:|:--:|:--:|:--:|:--:|
+|1|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|
 
 
 ```matlab:Code
@@ -204,9 +204,9 @@ mpcObj_multi
 x0_multi = cell(1, numel(op_pattern))
 ```
 
-| |1|2|3|4|5|6|7|8|
-|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
-|1|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|
+| |1|2|3|4|
+|:--:|:--:|:--:|:--:|:--:|
+|1|[ ]|[ ]|[ ]|[ ]|
 
 
 ```matlab:Code
@@ -238,16 +238,6 @@ open_system(model_name);
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 % set_param(modelName, 'SimulationCommand', 'update');
 sim(model_name);
-```
-
-
-```text:Output
-警告: 'Multiple_MPC_Controller/Multiple MPC Controllers' の'出力端子 2' は接続されていません。
-警告: 'Multiple_MPC_Controller/Multiple MPC Controllers' の'出力端子 3' は接続されていません。
-警告: 'Multiple_MPC_Controller/Multiple MPC Controllers' の'出力端子 4' は接続されていません。
-警告: 未接続の入力ラインが 'Multiple_MPC_Controller/Terminator2' で見つかりました (入力端子: 1)
-警告: 未接続の入力ラインが 'Multiple_MPC_Controller/Terminator1' で見つかりました (入力端子: 1)
-警告: 未接続の入力ラインが 'Multiple_MPC_Controller/Terminator' で見つかりました (入力端子: 1)
 ```
 
 
@@ -390,12 +380,7 @@ op_pattern = [{[0; 2]};
 
 
 
-![image_4.png](Multiple_MPC_Design_md_images/image_4.png)
-
-
-
-
-1ステップ当たりの平均計算時間は33.84ms、CPU使用率は168.4%である。
+1ステップ当たりの平均計算時間は32.1ms、CPU使用率は160.7%である。
 
 
 
@@ -405,28 +390,7 @@ op_pattern = [{[0; 2]};
 
 
 
-![image_5.png](Multiple_MPC_Design_md_images/image_5.png)
-
-
-## 予測ホライズンを短くする
-
-
-一方で、動作点を8パターンのまま、予測ホライズンを16ステップに縮めて、同じようにPIL検証を行った。
-
-
-
-
-その場合は、以下のような結果となった。
-
-
-
-
-![image_6.png](Multiple_MPC_Design_md_images/image_6.png)
-
-
-
-
-1ステップ当たりの平均計算時間は14.63ms、CPU使用率は72.63%である。
+![image_4.png](Multiple_MPC_Design_md_images/image_4.png)
 
 
 

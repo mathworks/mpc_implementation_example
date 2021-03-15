@@ -12,6 +12,7 @@
 # 初期化
 
 ```matlab:Code
+clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 system_model_name = 'Vehicle_system_Nonlinear_MPC';
 controller_model_name = 'Parking_NMPC_Controller';
 Ts = get_TimeStep('sim_data_vehicle_nl.sldd');
@@ -260,15 +261,6 @@ validateFcns(nlMPCObj,x0,u0,[],params);
 ```
 
 
-```text:Output
-Model.StateFcn is OK.
-Jacobian.StateFcn is OK.
-Model.OutputFcn is OK.
-Optimization.CustomEqConFcn is OK.
-ユーザー指定のモデル、コストおよび制約関数の解析が完了しました。
-```
-
-
 
 Nonlinear MPCは、現時点では実時間の計算に不向きであり、Simulink実行においても時間がかかる場合が多い。そこで、MEXにコンパイルすることで、シミュレーションの実行時間を改善させることができる。MEX化するには、事前にMEXコンパイラが設定されていなければならない。詳細については、「[Supported and Compatible Compilers](https://jp.mathworks.com/support/requirements/supported-compilers.html)」を参照。
 
@@ -292,16 +284,6 @@ if (use_nlmpc_mex)
 else
     set_param([controller_model_name, '/Nonlinear MPC Controller'], 'UseMEX', 'off');
 end
-```
-
-
-```text:Output
-非線形 MPC から MEX 関数 "nlMPCObj_mex" を生成してシミュレーションを高速化します。
-MEX 関数 "nlMPCObj_mex" は正常に生成されました。
-```
-
-
-```matlab:Code
 save_system(controller_model_name);
 ```
 

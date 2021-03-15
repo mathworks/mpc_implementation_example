@@ -283,7 +283,7 @@ SILモードでモデルとコードの等価性を調べる。
 
 
 ```matlab:Code
-% return;
+return;
 controller_sw = 2;
 
 set_param([model_name, '/Explicit_MPC_Controller'], 'SimulationMode', 'Normal');
