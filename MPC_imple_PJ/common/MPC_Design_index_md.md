@@ -45,7 +45,15 @@ MPCについて初学者であり、以下の資料を見ていない場合は�
 
    -  [モデル予測制御](https://jp.mathworks.com/discovery/model-predictive-control.html) 
 
-  
+### ホワイトペーパー
+
+
+以下の資料はMPCの技術的な資料である。ある程度ツールの使い方を理解した後に読むこと。
+
+
+
+   -  [MPC高速化のための3つの方法](https://www.mathworks.com/content/dam/mathworks/white-paper/3-ways-to-speed-up-model-predictive-controllers.pdf) 
+
 ## 2.線形MPC
 
 
@@ -118,6 +126,17 @@ MPCについて初学者であり、以下の資料を見ていない場合は�
 
 
   
+## 8.マルチステージの非線形MPC
+
+
+マルチステージの非線形MPCは、コスト関数を予測ホライズンの各ステップごとに設定できる。それにより、通常の非線形MPCよりも高速に計算できる。以下のライブエディターを開いて作業を開始すること。
+
+
+
+
+[マルチステージ非線形MPCの設計と実装](../Nonlinear/Nonlinear_MultiStage_MPC_design_md.md)
+
+
 ## Ex.1.適応モデル予測制御による倒立制御走行ロボットの倒立制御
 
 
