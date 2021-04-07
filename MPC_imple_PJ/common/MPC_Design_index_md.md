@@ -10,21 +10,22 @@
 特にマイクロコントローラに実装するときの検討事項について詳しくまとめている。
 
 
-# 注意事項
+# 必要なツールボックス
 
 
 本モデルでは、以下のツールボックスを利用する。ただし、インストールしていなくても、モデルを実行せず閲覧するだけであれば可能である。また、例題によっては使わないツールボックスもある。
 
 
 
-   -  Simulink 
-   -  Control System Toolbox 
-   -  Model Predictive Control Toolbox 
-   -  Simulink Control Design 
-   -  Simscape, Simscape Multibody 
-   -  Symbolic Math Toolbox 
-   -  Navigation Toolbox 
-   -  MATLAB Coder, Simulink Coder, Embedded Coder 
+   -  MATLAB® 
+   -  Simulink® 
+   -  Control System Toolbox™ 
+   -  Model Predictive Control Toolbox™ 
+   -  Simulink Control Design™ 
+   -  Simscape™, Simscape™ Multibody™ 
+   -  Symbolic Math Toolbox™ 
+   -  Navigation Toolbox™ 
+   -  MATLAB® Coder™, Simulink® Coder™, Embedded Coder® 
 
 # 目次
 ## 1.一般的な紹介資料

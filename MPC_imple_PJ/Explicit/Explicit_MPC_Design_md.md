@@ -243,7 +243,7 @@ compare_previous_run;
 # コード生成
 
 
-Embedded Coderによるコード生成結果を確認する。
+Embedded Coder®によるコード生成結果を確認する。
 
 
 

@@ -309,7 +309,7 @@ plot_vehicle_result_in_SDI;
 # コード生成
 
 
-Embedded Coderコード生成結果を確認する。
+Embedded Coder®コード生成結果を確認する。
 
 
 

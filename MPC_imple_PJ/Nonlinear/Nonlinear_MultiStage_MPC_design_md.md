@@ -196,7 +196,7 @@ plot_vehicle_nl_result_in_SDI;
 # コード生成
 
 
-Embedded Coderによるコード生成結果を確認する。
+Embedded Coder®によるコード生成結果を確認する。
 
 
 
