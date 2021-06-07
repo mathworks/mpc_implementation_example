@@ -44,15 +44,12 @@ dq3 = sin(dtheta * dTime / 2);
 q0_next = q0 * dq0 - q3 * dq3;
 q3_next = q0 * dq3 + q3 * dq0;
 
-% 非線形の連続時間状態方程式。
-% ここで、クオータニオンの微分に関しては線形近似を行っている。
-% よって、角度が大きく変化する場合は、実際の挙動と異なるので
-% 予測ホライズンが長くなりすぎないように注意すること。
+% 非線形の離散時間時間状態方程式 x[k+1] = f(x[k]) のfである。
 f = [
-    v*(2 * q0 ^ 2 - 1);     % 2倍角の公式
-    v*(2 * q3 * q0);        % 2倍角の公式
-    (q0_next - q0) / dTime;
-    (q3_next - q3) / dTime;
+    px + dTime * v*(2 * q0 ^ 2 - 1);     % 2倍角の公式
+    py + dTime * v*(2 * q3 * q0);        % 2倍角の公式
+    q0_next;
+    q3_next;
     ];
 
 % 非線形の出力方程式
@@ -81,6 +78,12 @@ start_pos = [-1.0, 0.0, -pi];
 goal_pos  = [14, -2.25, 0];
 pthObj = plan_MobileRobotPaths_using_RRT(Ts, path_Tf, start_pos, goal_pos);
 ```
+
+
+![figure_0.png](Nonlinear_MultiStage_MPC_design_md_images/figure_0.png)
+
+
+![figure_1.png](Nonlinear_MultiStage_MPC_design_md_images/figure_1.png)
 
 # MPCの設計
 
@@ -116,6 +119,9 @@ nlMPCObj.Model.ParameterLength = 2;
 nlMPCObj.Model.StateFcn = "ReedsSheppVehicleStateFcn_MultiStage";
 nlMPCObj.Model.StateJacFcn = "ReedsSheppVehicleStateJacobianFcn_MultiStage";
 
+% 状態方程式を離散時間の式として扱う。
+nlMPCObj.Model.IsContinuousTime = false;
+
 % コスト関数を設定する。
 nlMPCObj.UseMVRate = true;
 for ct = 1:p
@@ -128,7 +134,7 @@ end
 
 % 最適化の重みを設定する。
 % この重みはstage.paramとしてSimulinkのブロックへ与えられる。
-weight_x = [1, 1, 1, 1];
+weight_x = [1, 1, 2, 2];
 weight_mv = [0, 0];
 weight_dmv = [0.05, 0.05];
 ```
@@ -164,6 +170,15 @@ validateFcns(nlMPCObj, x0, u0, simdata);
 ```
 
 
+```text:Output
+Model.StateFcn is OK.
+Model.StateJacFcn is OK.
+"CostFcn" of the following stages [1 2 3 4 5 6 7 8 9 10] are OK.
+"CostJacFcn" of the following stages [1 2 3 4 5 6 7 8 9 10] are OK.
+ユーザー指定のモデル、コストおよび制約関数の解析が完了しました。
+```
+
+
 
 パスプランニングで生成した指令値のヨー角をクオータニオンに変換する。マルチステージのMPCでは、制御ホライズンは予測ホライズンと同一であるので、参照軌道で与えることにする。
 
@@ -189,6 +204,15 @@ set_slddVal('sim_data_vehicle_nl.sldd', 'refNum', ...
 ```matlab:Code
 open_system(system_model_name);
 sim(system_model_name);
+```
+
+
+```text:Output
+警告: パラメーター オブジェクトの 'Value' プロパティで、除算演算子を含む式 'TimeStep/2' が使用されています。この条件では、生成されたコードは式を保持しません。
+```
+
+
+```matlab:Code
 plot_vehicle_nl_result_in_SDI;
 ```
 
@@ -265,7 +289,7 @@ PIL検証の手順は使用する環境に依存しているため、本節で�
 
 
 
-1ステップ当たりの平均計算時間は265ms、CPU使用率は265%である。
+1ステップ当たりの平均計算時間は252.3ms、CPU使用率は252.3%である。
 
 
 

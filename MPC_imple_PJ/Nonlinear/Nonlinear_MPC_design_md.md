@@ -81,15 +81,12 @@ dq3 = sin(dtheta * dTime / 2);
 q0_next = q0 * dq0 - q3 * dq3;
 q3_next = q0 * dq3 + q3 * dq0;
 
-% 非線形の連続時間状態方程式。
-% ここで、クオータニオンの微分に関しては線形近似を行っている。
-% よって、角度が大きく変化する場合は、実際の挙動と異なるので
-% 予測ホライズンが長くなりすぎないように注意すること。
+% 非線形の離散時間時間状態方程式 x[k+1] = f(x[k]) のfである。
 f = [
-    v*(2 * q0 ^ 2 - 1);     % 2倍角の公式
-    v*(2 * q3 * q0);        % 2倍角の公式
-    (q0_next - q0) / dTime;
-    (q3_next - q3) / dTime;
+    px + dTime * v*(2 * q0 ^ 2 - 1);     % 2倍角の公式
+    py + dTime * v*(2 * q3 * q0);        % 2倍角の公式
+    q0_next;
+    q3_next;
     ];
 
 % 非線形の出力方程式
@@ -125,7 +122,7 @@ Ac = jacobian(f, x)
 
 Ac = 
 
-   <img src="https://latex.codecogs.com/gif.latex?&space;\begin{array}{l}&space;\left(\begin{array}{cccc}&space;0&space;&&space;0&space;&&space;4\,q_0&space;\,v&space;&&space;0\\&space;0&space;&&space;0&space;&&space;2\,q_3&space;\,v&space;&&space;2\,q_0&space;\,v\\&space;0&space;&&space;0&space;&&space;\sigma_1&space;&space;&&space;-\sigma_2&space;\\&space;0&space;&&space;0&space;&&space;\sigma_2&space;&space;&&space;\sigma_1&space;&space;\end{array}\right)\\&space;\mathrm{}\\&space;\textrm{where}\\&space;\mathrm{}\\&space;\;\;\sigma_1&space;=\frac{\cos&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)-1}{\textrm{dTime}}\\&space;\mathrm{}\\&space;\;\;\sigma_2&space;=\frac{\sin&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)}{\textrm{dTime}}&space;\end{array}"/>
+   <img src="https://latex.codecogs.com/gif.latex?&space;\left(\begin{array}{cccc}&space;1&space;&&space;0&space;&&space;4\,\textrm{dTime}\,q_0&space;\,v&space;&&space;0\\&space;0&space;&&space;1&space;&&space;2\,\textrm{dTime}\,q_3&space;\,v&space;&&space;2\,\textrm{dTime}\,q_0&space;\,v\\&space;0&space;&&space;0&space;&&space;\cos&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)&space;&&space;-\sin&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)\\&space;0&space;&&space;0&space;&&space;\sin&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)&space;&&space;\cos&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)&space;\end{array}\right)"/>
 
 ```matlab:Code
 Bc = jacobian(f, u)
@@ -133,7 +130,7 @@ Bc = jacobian(f, u)
 
 Bc = 
 
-   <img src="https://latex.codecogs.com/gif.latex?&space;\begin{array}{l}&space;\left(\begin{array}{cc}&space;2\,{q_0&space;}^2&space;-1&space;&&space;0\\&space;2\,q_0&space;\,q_3&space;&space;&&space;0\\&space;-\frac{\frac{\textrm{dTime}\,q_3&space;\,\cos&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}+\frac{\textrm{dTime}\,q_0&space;\,\sin&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}}{\textrm{dTime}}&space;&&space;-\frac{\frac{\textrm{dTime}\,q_3&space;\,v\,\cos&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}+\frac{\textrm{dTime}\,q_0&space;\,v\,\sin&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}}{\textrm{dTime}}\\&space;\frac{\frac{\textrm{dTime}\,q_0&space;\,\cos&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3&space;\,\sin&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}}{\textrm{dTime}}&space;&&space;\frac{\frac{\textrm{dTime}\,q_0&space;\,v\,\cos&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3&space;\,v\,\sin&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}}{\textrm{dTime}}&space;\end{array}\right)\\&space;\mathrm{}\\&space;\textrm{where}\\&space;\mathrm{}\\&space;\;\;\sigma_1&space;={\tan&space;\left(\delta&space;\right)}^2&space;+1\\&space;\mathrm{}\\&space;\;\;\sigma_2&space;=\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;\end{array}"/>
+   <img src="https://latex.codecogs.com/gif.latex?&space;\begin{array}{l}&space;\left(\begin{array}{cc}&space;\textrm{dTime}\,{\left(2\,{q_0&space;}^2&space;-1\right)}&space;&&space;0\\&space;2\,\textrm{dTime}\,q_0&space;\,q_3&space;&space;&&space;0\\&space;-\frac{\textrm{dTime}\,q_3&space;\,\cos&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_0&space;\,\sin&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;&&space;-\frac{\textrm{dTime}\,q_3&space;\,v\,\cos&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_0&space;\,v\,\sin&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}\\&space;\frac{\textrm{dTime}\,q_0&space;\,\cos&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3&space;\,\sin&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;&&space;\frac{\textrm{dTime}\,q_0&space;\,v\,\cos&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3&space;\,v\,\sin&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}&space;\end{array}\right)\\&space;\mathrm{}\\&space;\textrm{where}\\&space;\mathrm{}\\&space;\;\;\sigma_1&space;={\tan&space;\left(\delta&space;\right)}^2&space;+1\\&space;\mathrm{}\\&space;\;\;\sigma_2&space;=\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;\end{array}"/>
 
 ```matlab:Code
 file_path = [char(proj.RootFolder), filesep, 'gen_script', filesep, 'calc_Ac.m'];
@@ -240,6 +237,9 @@ nlMPCObj.Model.NumberOfParameters = 2;
 nlMPCObj.Model.StateFcn = "ReedsSheppVehicleStateFcn";
 nlMPCObj.Jacobian.StateFcn = "ReedsSheppVehicleStateJacobianFcnRRT";
 nlMPCObj.Model.OutputFcn = "ReedsSheppVehicleOutputFcn";
+
+% 状態方程式を離散時間の式として扱う。
+nlMPCObj.Model.IsContinuousTime = false;
 
 % 終端条件を指定する。ゴール時には速度とステアリング角度は0になっている必要がある。
 nlMPCObj.Optimization.CustomEqConFcn = "parkingTerminalConFcn";
