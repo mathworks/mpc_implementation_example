@@ -164,4 +164,27 @@ MPCについて初学者であり、以下の資料を見ていない場合は�
 [モデル予測制御ならびにカメラ画像によるターゲット認識を利用した衝突回避](/MPC_imple_PJ/obstacleAvoid/liveScriptForObstacleAvoid_md.md)
 
 
+  
+# 過去バージョン
+
+
+過去のバージョンのファイル一式は、以下から得ることができる。ただし、過去のモデルには、古い時期に作成したサンプルしか含まれていないことに注意すること。
+
+
+
+
+GitHubからクローンしている場合には、以下の該当バージョンに戻すことで、過去バージョンファイルを得ることができる。
+
+
+  
+
+
+R2020b: [v2.2](https://github.com/mathworks/mpc_implementation_example/archive/refs/tags/v2.2.zip)
+
+
+
+
+R2020a: [v1.1.1](https://github.com/mathworks/mpc_implementation_example/archive/refs/tags/v1.1.1.zip)
+
+
 
