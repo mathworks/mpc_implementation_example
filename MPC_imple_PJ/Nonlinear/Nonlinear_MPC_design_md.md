@@ -279,12 +279,12 @@ Nonlinear MPCは、現時点では実時間の計算に不向きであり、Simu
 
 
 
-MEX化をしたくない場合は、以下のuse_nlmpc_mexをfalseとすること。
+MEX化する場合は以下のuse_nlmpc_mexをtrueに、しない場合はfalseにすること。
 
 
 
 ```matlab:Code
-use_nlmpc_mex = true;
+use_nlmpc_mex = false;
 open_system(controller_model_name);
 if (use_nlmpc_mex)
     [coreData,onlineData] = getCodeGenerationData(nlMPCObj,x0,u0,params);
@@ -296,18 +296,6 @@ if (use_nlmpc_mex)
 else
     set_param([controller_model_name, '/Nonlinear MPC Controller'], 'UseMEX', 'off');
 end
-```
-
-
-```text:Output
-非線形 MPC から MEX 関数 "nlMPCObj_mex" を生成してシミュレーションを高速化します。
-コード生成が成功しました。
-
-MEX 関数 "nlMPCObj_mex" は正常に生成されました。
-```
-
-
-```matlab:Code
 save_system(controller_model_name);
 ```
 
