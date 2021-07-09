@@ -26,3 +26,7 @@
 *.pdf binary
 *.png binary
 *.xlsx binary
+
+## No export for achive
+.gitattributes export-ignore
+.gitignore export-ignore
