@@ -31,19 +31,15 @@ ts = get_TimeStep('sim_data_vehicle.sldd');
 
 ```matlab:Code
 % 変数定義
-m = sym('m','real'); u = sym('u','real'); v = sym('v','real');
-r = sym('r','real'); F_f = sym('F_f','real'); F_r = sym('F_r','real');
-I = sym('I','real'); l_f = sym('l_f','real'); l_r = sym('l_r','real');
-v_dot = sym('v_dot','real'); r_dot = sym('r_dot','real');
-V = sym('V','real'); beta = sym('beta','real'); beta_dot = sym('beta_dot','real');
+syms m u v r F_f F_r real;
+syms I l_f l_r v_dot r_dot V beta beta_dot real;
 % 方程式
 eq_1 = m * (v_dot + u * r) == F_f + F_r;
 eq_2 = I * r_dot == l_f * F_f - l_r * F_r;
 % 代入
 eq_1 = subs(eq_1, [u, v_dot], [V, V * beta_dot]);
 % 変数定義
-K_f = sym('K_f','real'); K_r = sym('K_r','real'); delta = sym('delta','real');
-beta_f = sym('beta_f','real'); beta_r = sym('beta_r','real');
+syms K_f K_r delta beta_f beta_r real;
 % 代入
 eq_vec = subs([eq_1, eq_2], [F_f, F_r], [-2 * K_f * beta_f, -2 * K_r * beta_r]);
 eq_vec = subs(eq_vec, [beta_f, beta_r], ...
@@ -56,11 +52,11 @@ r_dot = sol_vec.r_dot;
 
 normal_input_names = {'delta', 'a'};
 % 変数定義
-a = sym('a','real');
+syms a real;
 U = [delta; a];
 state_names = {'px', 'py', 'theta', 'r', 'beta', 'V'};
 % 変数定義
-theta = sym('theta','real'); px = sym('px','real'); py = sym('py','real');
+syms theta px py real;
 X = [px; py; theta; r; beta; V];
 output_names = {'px', 'py', 'theta', 'r', 'V'};
 Y = [px; py; theta; r; V];
@@ -105,11 +101,11 @@ Multiple MPCは、非線形モデルを動作点ごとに線形化し、それ�
 
 
 ```matlab:Code
-% op_pattern = [{[0; 1]}; {[0; 2]};
-%     {[pi/2; 1]}; {[pi/2; 2]};
-%     {[pi; 1]}; {[pi; 2]};
-%     {[-pi/2; 1]}; {[-pi/2; 2]};
-%     ];
+op_pattern = [{[0; 1]}; {[0; 2]};
+    {[pi/2; 1]}; {[pi/2; 2]};
+    {[pi; 1]}; {[pi; 2]};
+    {[-pi/2; 1]}; {[-pi/2; 2]};
+    ];
 ```
 
 
@@ -149,9 +145,9 @@ end
 sys_pattern
 ```
 
-| |1|2|3|4|
-|:--:|:--:|:--:|:--:|:--:|
-|1|5x2 ss|5x2 ss|5x2 ss|5x2 ss|
+| |1|2|3|4|5|6|7|8|
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+|1|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|
 
 
 
@@ -194,9 +190,9 @@ end
 mpcObj_multi
 ```
 
-| |1|2|3|4|
-|:--:|:--:|:--:|:--:|:--:|
-|1|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|
+| |1|2|3|4|5|6|7|8|
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+|1|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|
 
 
 ```matlab:Code
@@ -204,9 +200,9 @@ mpcObj_multi
 x0_multi = cell(1, numel(op_pattern))
 ```
 
-| |1|2|3|4|
-|:--:|:--:|:--:|:--:|:--:|
-|1|[ ]|[ ]|[ ]|[ ]|
+| |1|2|3|4|5|6|7|8|
+|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+|1|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|
 
 
 ```matlab:Code

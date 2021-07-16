@@ -36,19 +36,15 @@ ts = get_TimeStep('sim_data_vehicle.sldd');
 
 ```matlab:Code
 % 変数定義
-m = sym('m','real'); u = sym('u','real'); v = sym('v','real');
-r = sym('r','real'); F_f = sym('F_f','real'); F_r = sym('F_r','real');
-I = sym('I','real'); l_f = sym('l_f','real'); l_r = sym('l_r','real');
-v_dot = sym('v_dot','real'); r_dot = sym('r_dot','real');
-V = sym('V','real'); beta = sym('beta','real'); beta_dot = sym('beta_dot','real');
+syms m u v r F_f F_r real;
+syms I l_f l_r v_dot r_dot V beta beta_dot real;
 % 方程式
 eq_1 = m * (v_dot + u * r) == F_f + F_r;
 eq_2 = I * r_dot == l_f * F_f - l_r * F_r;
 % 代入
 eq_1 = subs(eq_1, [u, v_dot], [V, V * beta_dot]);
 % 変数定義
-K_f = sym('K_f','real'); K_r = sym('K_r','real'); delta = sym('delta','real');
-beta_f = sym('beta_f','real'); beta_r = sym('beta_r','real');
+syms K_f K_r delta beta_f beta_r real;
 % 代入
 eq_vec = subs([eq_1, eq_2], [F_f, F_r], [-2 * K_f * beta_f, -2 * K_r * beta_r]);
 eq_vec = subs(eq_vec, [beta_f, beta_r], ...
@@ -60,11 +56,11 @@ beta_dot = sol_vec.beta_dot;
 r_dot = sol_vec.r_dot;
 normal_input_names = {'delta', 'a'};
 % 変数定義
-a = sym('a','real');
+syms a real;
 U = [delta; a];
 state_names = {'px', 'py', 'theta', 'r', 'beta', 'V'};
 % 変数定義
-theta = sym('theta','real'); px = sym('px','real'); py = sym('py','real');
+syms theta px py real;
 X = [px; py; theta; r; beta; V];
 output_names = {'px', 'py', 'theta', 'r', 'V'};
 Y = [px; py; theta; r; V];
@@ -97,7 +93,6 @@ matlabFunction(Cc, 'File', file_path);
 insert_zero_divide_avoidance(file_path);
 x0 = [0; 0; 0; 0; 0; 1];
 u0 = zeros(size(U, 1), 1);
-UdD0 = zeros(size(U, 1), 1);
 
 uNum_MPC = size(u0, 1);
 xNum_MPC = size(x0, 1);
@@ -128,20 +123,6 @@ Adaptive MPCを用いたMPC制御器を構成する。
 
 ```matlab:Code
 mpcObj = mpc(dsys);
-```
-
-
-```text:Output
--->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
--->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
--->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
--->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
--->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
-   for output(s) y1 y2 and zero weight for output(s) y3 y4 y5 
-```
-
-
-```matlab:Code
 solverType = 2;
 if (solverType == 1)
     % QPソルバーをアクティブセット法に指定する
@@ -160,7 +141,7 @@ mpcObj.PredictionHorizon = 16;
 mpcObj.ControlHorizon = 1;
 
 % ノミナル状態を更新
-mpcObj.Model.Nominal = struct('U',[Ud; UdD0],'Y',Yd,'X',Xd,'DX',DXd);
+mpcObj.Model.Nominal = struct('U',Ud,'Y',Yd,'X',Xd,'DX',DXd);
 
 % 制約
 % 操舵角は30deg以内であること
@@ -204,16 +185,6 @@ open_system(model_name);
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 % set_param(modelName, 'SimulationCommand', 'update');
 sim(model_name);
-```
-
-
-```text:Output
-   測定出力チャネル #1 に外乱が追加されていないと仮定します。
-   測定出力チャネル #2 に外乱が追加されていないと仮定します。
--->測定出力チャネル #5 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
--->測定出力チャネル #3 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
--->測定出力チャネル #4 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
--->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
 ```
 
 

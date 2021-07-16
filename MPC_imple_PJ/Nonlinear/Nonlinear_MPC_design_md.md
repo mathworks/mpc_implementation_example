@@ -19,7 +19,6 @@ load_system(system_model_name);
 set_param([system_model_name, '/MPC_Controller'], ...
     'ModelName', controller_model_name);
 Ts = get_TimeStep('sim_data_vehicle_nl.sldd');
-ref_VALIANT = Simulink.Variant;
 
 ref_VALIANT_TS = Simulink.Variant('CTRL_MODE == 1');
 ref_VALIANT_TT = Simulink.Variant('CTRL_MODE == 2');

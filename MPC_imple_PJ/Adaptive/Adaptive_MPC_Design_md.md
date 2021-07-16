@@ -200,7 +200,6 @@ r_dot =
 ```matlab:Code
 normal_input_names = {'delta', 'a'};
 % 変数定義
-% a = sym('a','real');
 syms a real;
 U = [delta; a];
 ```
