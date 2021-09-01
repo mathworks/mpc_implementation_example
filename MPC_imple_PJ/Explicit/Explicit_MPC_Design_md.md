@@ -237,7 +237,7 @@ sim(model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 # コード生成
@@ -249,7 +249,7 @@ Embedded Coder®によるコード生成結果を確認する。
 
 ```matlab:Code
 return;
-rtwbuild(exp_controller_name);
+slbuild(exp_controller_name);
 ```
 
 
@@ -299,7 +299,7 @@ sim(model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 

@@ -199,7 +199,7 @@ mpcObj = mpc(plant_ss_indist, ts)
 -->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
 -->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
  
-MPC object (created on 12-Mar-2021 08:41:36):
+MPC object (created on 31-Aug-2021 14:42:44):
 ---------------------------------------------
 Sampling time:      0.01 (seconds)
 Prediction Horizon: 30
@@ -228,7 +228,6 @@ Weights:
     ManipulatedVariablesRate: 0.1000
              OutputVariables: 1
                          ECR: 100000
-
 State Estimation:  Default Kalman Filter (type "getEstimator(mpcObj)" for details)
 
 Unconstrained
@@ -340,7 +339,7 @@ Embedded Coder®によるコード生成結果を確認する。
 
 ```matlab:Code
 return;
-rtwbuild(lin_controller_name);
+slbuild(lin_controller_name);
 ```
 
 # SIL検証
@@ -365,7 +364,7 @@ sim(model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 

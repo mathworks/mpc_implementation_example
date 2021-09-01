@@ -134,7 +134,7 @@ end
 
 % 最適化の重みを設定する。
 % この重みはstage.paramとしてSimulinkのブロックへ与えられる。
-weight_x = [1, 1, 2, 2];
+weight_x = [1, 1, 1.5, 1.5];
 weight_mv = [0, 0];
 weight_dmv = [0.05, 0.05];
 ```
@@ -204,15 +204,6 @@ set_slddVal('sim_data_vehicle_nl.sldd', 'refNum', ...
 ```matlab:Code
 open_system(system_model_name);
 sim(system_model_name);
-```
-
-
-```text:Output
-警告: パラメーター オブジェクトの 'Value' プロパティで、除算演算子を含む式 'TimeStep/2' が使用されています。この条件では、生成されたコードは式を保持しません。
-```
-
-
-```matlab:Code
 plot_vehicle_nl_result_in_SDI;
 ```
 
@@ -226,7 +217,7 @@ Embedded Coder®によるコード生成結果を確認する。
 
 ```matlab:Code
 return;
-rtwbuild(controller_model_name);
+slbuild(controller_model_name);
 ```
 
   
@@ -252,7 +243,7 @@ sim(system_model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 

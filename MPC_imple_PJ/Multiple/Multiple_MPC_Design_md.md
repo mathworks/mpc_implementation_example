@@ -311,7 +311,7 @@ Embedded Coder®コード生成結果を確認する。
 
 ```matlab:Code
 return;
-rtwbuild(mul_controller_name);
+slbuild(mul_controller_name);
 ```
 
 # SIL検証
@@ -336,7 +336,7 @@ sim(model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 # PIL検証

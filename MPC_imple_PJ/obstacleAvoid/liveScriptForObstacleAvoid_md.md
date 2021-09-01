@@ -297,7 +297,7 @@ sim(model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 

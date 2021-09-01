@@ -217,7 +217,7 @@ Embedded Coder®コード生成結果を確認する。
 
 ```matlab:Code
 return;
-rtwbuild(ada_controller_name);
+slbuild(ada_controller_name);
 ```
 
 
@@ -263,7 +263,7 @@ sim(model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 # PIL検証

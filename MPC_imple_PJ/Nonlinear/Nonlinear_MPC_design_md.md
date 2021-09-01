@@ -365,7 +365,7 @@ Embedded Coder®によるコード生成結果を確認する。
 
 ```matlab:Code
 return;
-rtwbuild(controller_model_name);
+slbuild(controller_model_name);
 ```
 
   
@@ -391,7 +391,7 @@ sim(system_model_name);
 
 
 ```matlab:Code
-compare_previous_run;
+compare_previous_run(1);
 ```
 
 
