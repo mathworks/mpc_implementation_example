@@ -53,7 +53,7 @@ MPCについて初学者であり、以下の資料を見ていない場合は�
 
 
 
-   -  [MPC高速化のための3つの方法](https://www.mathworks.com/content/dam/mathworks/white-paper/3-ways-to-speed-up-model-predictive-controllers.pdf) 
+   -  [MPC高速化のための3つの方法](https://www.mathworks.com/content/dam/mathworks/white-paper/jp-3-ways-to-speed-up-model-predictive-controllers.pdf) 
 
 ## 2.線形MPC
 
