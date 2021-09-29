@@ -454,6 +454,47 @@ Adaptive MPCを用いたMPC制御器を構成する。
 
 ```matlab:Code
 mpcObj = mpc(dsys)
+```
+
+
+```text:Output
+-->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
+-->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
+-->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
+-->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
+-->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
+   for output(s) y1 y2 and zero weight for output(s) y3 y4 y5 
+ 
+MPC object (created on 27-Sep-2021 18:16:42):
+---------------------------------------------
+Sampling time:      0.02 (seconds)
+Prediction Horizon: 10
+Control Horizon:    2
+
+Plant Model:        
+                                      --------------
+      2  manipulated variable(s)   -->|  6 states  |
+                                      |            |-->  5 measured output(s)
+      0  measured disturbance(s)   -->|  2 inputs  |
+                                      |            |-->  0 unmeasured output(s)
+      0  unmeasured disturbance(s) -->|  5 outputs |
+                                      --------------
+Disturbance and Noise Models:
+        Output disturbance model: default (type "getoutdist(mpcObj)" for details)
+         Measurement noise model: default (unity gain after scaling)
+
+Weights:
+        ManipulatedVariables: [0 0]
+    ManipulatedVariablesRate: [0.1000 0.1000]
+             OutputVariables: [1 1 0 0 0]
+                         ECR: 100000
+State Estimation:  Default Kalman Filter (type "getEstimator(mpcObj)" for details)
+
+Unconstrained
+```
+
+
+```matlab:Code
 
 % 予測ホライズン、制御ホライズンの設定
 mpcObj.PredictionHorizon = 16;
@@ -504,6 +545,16 @@ open_system(model_name);
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 % set_param(modelName, 'SimulationCommand', 'update');
 sim(model_name);
+```
+
+
+```text:Output
+   測定出力チャネル #1 に外乱が追加されていないと仮定します。
+   測定出力チャネル #2 に外乱が追加されていないと仮定します。
+-->測定出力チャネル #5 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->測定出力チャネル #3 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->測定出力チャネル #4 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
 ```
 
 
@@ -591,7 +642,7 @@ compare_previous_run(1);
 
 
 
-1ステップ当たりの平均計算時間は39.4ms、CPU使用率は197.4%である。
+1ステップ当たりの平均計算時間は57.9ms、CPU使用率は289.5%である。
 
 
 

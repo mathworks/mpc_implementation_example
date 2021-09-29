@@ -150,7 +150,7 @@ matlabFunction(Bc, 'File', file_path);
 
 
 
-従って、「Nonlinear MPC Controller」ブロックに入力する前にヨー角からクオータニオンに変換する処理を行っている。「[Parking_NMPC_Controller.slx](Parking_NMPC_Controller)」を参照。
+従って、「Nonlinear MPC Controller」ブロックに入力する前にヨー角からクオータニオンに変換する処理を行っている。「[Parking_NMPC_Controller.slx](http://parking_nmpc_controller)」を参照。
 
 
 # パスプランニング

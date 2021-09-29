@@ -123,6 +123,20 @@ Adaptive MPCを用いたMPC制御器を構成する。
 
 ```matlab:Code
 mpcObj = mpc(dsys);
+```
+
+
+```text:Output
+-->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
+-->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
+-->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
+-->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
+-->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
+   for output(s) y1 y2 and zero weight for output(s) y3 y4 y5 
+```
+
+
+```matlab:Code
 solverType = 2;
 if (solverType == 1)
     % QPソルバーをアクティブセット法に指定する
@@ -185,6 +199,16 @@ open_system(model_name);
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 % set_param(modelName, 'SimulationCommand', 'update');
 sim(model_name);
+```
+
+
+```text:Output
+   測定出力チャネル #1 に外乱が追加されていないと仮定します。
+   測定出力チャネル #2 に外乱が追加されていないと仮定します。
+-->測定出力チャネル #5 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->測定出力チャネル #3 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->測定出力チャネル #4 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
+-->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
 ```
 
 
@@ -284,7 +308,7 @@ compare_previous_run(1);
 
 
 
-1ステップ当たりの平均計算時間は42.7ms、CPU使用率は213.7%である。アクティブセット法と比較して、計算時間にあまり差はないことが分かる。
+1ステップ当たりの平均計算時間は60.5ms、CPU使用率は302.5%である。アクティブセット法と比較して、計算時間にあまり差はないことが分かる。
 
 
 

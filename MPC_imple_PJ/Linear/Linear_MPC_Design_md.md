@@ -199,7 +199,7 @@ mpcObj = mpc(plant_ss_indist, ts)
 -->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
 -->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
  
-MPC object (created on 31-Aug-2021 14:42:44):
+MPC object (created on 27-Sep-2021 15:50:52):
 ---------------------------------------------
 Sampling time:      0.01 (seconds)
 Prediction Horizon: 30
@@ -422,7 +422,7 @@ PIL検証の手順は使用する環境に依存しているため、本節で�
 
 
 
-1ステップ当たりの平均計算時間は574μs、CPU使用率は5.74%である。
+1ステップ当たりの平均計算時間は625μs、CPU使用率は6.25%である。
 
 
 

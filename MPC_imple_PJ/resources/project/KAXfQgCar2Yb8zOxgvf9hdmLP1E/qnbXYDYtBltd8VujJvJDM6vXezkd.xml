@@ -1,2 +1,2 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<Info Type="Shutdown" Visible="0" Icon="" File="others/end_pj_script.m" Name="end_pj_script" />
+<?xml version="1.0" encoding="UTF-8"?>
+<Info File="others/end_pj_script.m" Icon="" Name="end_pj_script" Type="Shutdown" Visible="0"/>

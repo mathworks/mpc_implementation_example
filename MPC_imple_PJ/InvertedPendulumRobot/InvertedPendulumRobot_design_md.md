@@ -188,7 +188,7 @@ eq = collect(eq,[theta_ddot, psi_ddot, theta_dot, psi_dot])
 
 eq = 
 
-   <img src="https://latex.codecogs.com/gif.latex?&space;\begin{array}{l}&space;\left(\begin{array}{c}&space;{\left(\textrm{Jw}+M\,R^2&space;+R^2&space;\,m\right)}\,\ddot{\theta}&space;+{\left(\textrm{Jw}+R^2&space;\,m+M\,R\,{\left(R+L\,\cos&space;\left(\psi&space;\right)\right)}\right)}\,\ddot{\psi}&space;+\textrm{fw}\,\dot{\theta}&space;+\sigma_1&space;-F_{\theta&space;}&space;\\&space;{\left(\textrm{Jw}+M\,R^2&space;+R^2&space;\,m+L\,M\,R\,\cos&space;\left(\psi&space;\right)\right)}\,\ddot{\theta}&space;+{\left(\textrm{Jpsi}+\textrm{Jw}+L^2&space;\,M+M\,R^2&space;+R^2&space;\,m+2\,L\,M\,R\,\cos&space;\left(\psi&space;\right)\right)}\,\ddot{\psi}&space;+\sigma_1&space;+\textrm{fm}\,\dot{\psi}&space;-L\,M\,g\,\sin&space;\left(\psi&space;\right)&space;\end{array}\right)\\&space;\mathrm{}\\&space;\textrm{where}\\&space;\mathrm{}\\&space;\;\;\sigma_1&space;={\left(-L\,M\,R\,\sin&space;\left(\psi&space;\right)\right)}\,{\dot{\psi}&space;}^2&space;&space;\end{array}"/>
+   <img src="https://latex.codecogs.com/gif.latex?&space;\begin{array}{l}&space;\left(\begin{array}{cc}&space;{\left(\textrm{Jw}+M\,R^2&space;+R^2&space;\,m\right)}\,\ddot{\theta}&space;+{\left(\textrm{Jw}+R^2&space;\,m+M\,R\,{\left(R+L\,\cos&space;\left(\psi&space;\right)\right)}\right)}\,\ddot{\psi}&space;+\textrm{fw}\,\dot{\theta}&space;+\sigma_1&space;-F_{\theta&space;}&space;&space;&&space;{\left(\textrm{Jw}+M\,R^2&space;+R^2&space;\,m+L\,M\,R\,\cos&space;\left(\psi&space;\right)\right)}\,\ddot{\theta}&space;+{\left(\textrm{Jpsi}+\textrm{Jw}+L^2&space;\,M+M\,R^2&space;+R^2&space;\,m+2\,L\,M\,R\,\cos&space;\left(\psi&space;\right)\right)}\,\ddot{\psi}&space;+\sigma_1&space;+\textrm{fm}\,\dot{\psi}&space;-L\,M\,g\,\sin&space;\left(\psi&space;\right)&space;\end{array}\right)\\&space;\mathrm{}\\&space;\textrm{where}\\&space;\mathrm{}\\&space;\;\;\sigma_1&space;={\left(-L\,M\,R\,\sin&space;\left(\psi&space;\right)\right)}\,{\dot{\psi}&space;}^2&space;&space;\end{array}"/>
 
 
 次に、アクチュエータ部分の定式化を行う。ここでは簡単化のため、制御器の操作量（電流指令値）に比例してトルクが発生するものとする。
@@ -597,7 +597,7 @@ PIL検証の手順は使用する環境に依存しているため、本節で�
 
 
 
-1ステップ当たりの平均計算時間は28.6ms、CPU使用率は286.1%である。
+1ステップ当たりの平均計算時間は34.3ms、CPU使用率は342.9%である。
 
 
 
@@ -622,7 +622,7 @@ PIL検証の手順は使用する環境に依存しているため、本節で�
 
 
 
-1ステップ当たりの平均計算時間は7.61ms、CPU使用率は38.07%である。
+1ステップ当たりの平均計算時間は8.85ms、CPU使用率は44.24%である。
 
 
   

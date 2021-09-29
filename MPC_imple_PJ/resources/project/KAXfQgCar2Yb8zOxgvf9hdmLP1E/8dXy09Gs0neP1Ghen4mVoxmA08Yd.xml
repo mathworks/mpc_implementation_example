@@ -1,2 +1,2 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<Info Type="StartUp" Visible="0" Icon="" File="others/start_pj_script.m" Name="start_pj_script" />
+<?xml version="1.0" encoding="UTF-8"?>
+<Info File="others/start_pj_script.m" Icon="" Name="start_pj_script" Type="StartUp" Visible="0"/>
