@@ -2,7 +2,7 @@
 # 目的
 
 
-当サンプルモデルは、モデル予測制御（MPC）の設計と実装のワークフローを分かりやすく紹介するための資料である。
+当サンプルモデルは、モデル予測制御（MPC）の設計と実装のワークフローを分かりやすく紹介するための資料である。（サンプルモデルの使い方については、[こちら](https://github.com/mathworks/mpc_implementation_example/blob/master/MPC_imple_PJ_%E8%AA%AC%E6%98%8E%E8%B3%87%E6%96%99.pdf)を参照）
 
 
 
