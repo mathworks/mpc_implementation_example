@@ -14,6 +14,7 @@
 ```matlab:Code
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 proj = currentProject;
+create_ref_data;
 model_name = 'Vehicle_system_Adaptive_MPC';
 ada_controller_name = 'Adaptive_MPC_Controller';
 ts = get_TimeStep('sim_data_vehicle.sldd');

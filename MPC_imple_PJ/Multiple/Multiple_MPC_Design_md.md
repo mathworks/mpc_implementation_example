@@ -14,6 +14,7 @@
 ```matlab:Code
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 proj = currentProject;
+create_ref_data;
 model_name = 'Vehicle_system_Multiple_MPC';
 mul_controller_name = 'Multiple_MPC_Controller';
 standalone_plant_name = 'Vehicle_plant_model_sl';
