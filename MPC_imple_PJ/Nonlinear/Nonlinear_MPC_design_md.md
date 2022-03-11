@@ -399,4 +399,35 @@ compare_previous_run(1);
 計算結果は必ずしも一致するわけではない。アルゴリズムの計算は浮動小数点で行われているため、例えば四則演算の計算順序が変わると結果が僅かに異なる場合がある。コード生成前後で四則演算の順序は変わる可能性がある。
 
 
+# PIL検証
+
+
+マルチステージの非線形MPCの計算時間を測定する。本節では、例としてRaspberry Pi 3 Model B+を用いたPIL検証を行う。性能は以下の通りである。
+
+
+
+   -  CPU: 64-bit quad-core ARM Cortex-A53 
+   -  Clock: 1.4GHz 
+   -  RAM: 1GB 
+
+
+
+PIL検証の手順は使用する環境に依存しているため、本節ではコードを用いた説明は行わない。主な作業手順については、「Linear_MPC_Design.mlx」を参照。
+
+
+
+
+![image_1.png](Nonlinear_MPC_design_md_images/image_1.png)
+
+
+
+
+![image_2.png](Nonlinear_MPC_design_md_images/image_2.png)
+
+
+
+
+1ステップ当たりの平均計算時間は383ms、CPU使用率は383%である。
+
+
 
