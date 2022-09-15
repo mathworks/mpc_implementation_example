@@ -459,14 +459,14 @@ mpcObj = mpc(dsys)
 
 
 ```text:Output
--->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
--->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
--->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
--->"mpc" オブジェクトの "Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
--->"mpc" オブジェクトの "Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
+-->"PredictionHorizon" プロパティが空です。既定の 10 を仮定します。
+-->"ControlHorizon" プロパティが空です。既定の 2 を仮定します。
+-->"Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
+-->"Weights.ManipulatedVariablesRate" プロパティが空です。既定の 0.10000 を仮定します。
+-->"Weights.OutputVariables" プロパティが空です。既定の 1.00000 を仮定します。
    for output(s) y1 y2 and zero weight for output(s) y3 y4 y5 
  
-MPC object (created on 27-Sep-2021 18:16:42):
+MPC object (created on 15-Sep-2022 17:45:00):
 ---------------------------------------------
 Sampling time:      0.02 (seconds)
 Prediction Horizon: 10
@@ -489,6 +489,7 @@ Weights:
     ManipulatedVariablesRate: [0.1000 0.1000]
              OutputVariables: [1 1 0 0 0]
                          ECR: 100000
+
 State Estimation:  Default Kalman Filter (type "getEstimator(mpcObj)" for details)
 
 Unconstrained
@@ -555,7 +556,7 @@ sim(model_name);
 -->測定出力チャネル #5 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
 -->測定出力チャネル #3 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
 -->測定出力チャネル #4 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
--->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
+-->"Model.Noise" プロパティが空です。それぞれの測定出力にホワイト ノイズを仮定します。
 ```
 
 
@@ -643,7 +644,7 @@ compare_previous_run(1);
 
 
 
-1ステップ当たりの平均計算時間は57.9ms、CPU使用率は289.5%である。
+1ステップ当たりの平均計算時間は61.7ms、CPU使用率は308.4%である。
 
 
 
