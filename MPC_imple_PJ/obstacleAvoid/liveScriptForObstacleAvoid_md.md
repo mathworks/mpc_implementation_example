@@ -7,7 +7,7 @@
 
 
 
-![image_0.png](liveScriptForObstacleAvoid_md_images/image_0.png)
+![image_0.bmp](liveScriptForObstacleAvoid_md_images/image_0.bmp)
 
 
 # 初期化
