@@ -1,83 +1,134 @@
-
 # モデル予測制御ならびにカメラ画像によるターゲット認識を利用した衝突回避
 # 背景
+
 
 本例ではMPC Toolboxから提供されている「[車両の衝突回避の例](https://www.mathworks.com/help/releases/R2021a/mpc/ug/obstacle-avoidance-using-adaptive-model-predictive-control.html)」を題材に、モデル予測制御（MPC）による車両制御の設計を行う。
 
 
+
+
 ![image_0.bmp](liveScriptForObstacleAvoid_md_media/image_0.bmp)
 
+
 # 初期化
-```matlab
+
+```matlab:Code
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 model_name = 'obstacleAvoidance';
 controller_name = 'obstacleAvoid_controller';
 Ts = get_TimeStep('obstacleAvoidance_data.sldd');
 ```
+
 # プラントモデリング
+
 
 自車の車両モデルは、長方形（５×２[m]）の形状とし、下記の単純な非線形モデルとして想定する。
 
 
- $$ \begin{array}{l} \dot{x} =v\;\cos \left(\theta \right)\\ \dot{y} =v\;\sin \left(\theta \right)\\ \dot{\theta} =\frac{v\;\tan \left(\delta \right)}{L}\\ \dot{v} =k\cdot T \end{array} $$ 
+  
+
+<img src="https://latex.codecogs.com/gif.latex?\begin{array}{l}&space;\dot{x}&space;=v\;\cos&space;\left(\theta&space;\right)\\&space;\dot{y}&space;=v\;\sin&space;\left(\theta&space;\right)\\&space;\dot{\theta}&space;=\frac{v\;\tan&space;\left(\delta&space;\right)}{L}\\&space;\dot{v}&space;=k\cdot&space;T&space;\end{array}"/>
+
+  
 
 
-状態は $x,y,\theta ,v$ の4変数であるが、出力もこの4変数であるとする。
+状態は<img src="https://latex.codecogs.com/gif.latex?\inline&space;x,y,\theta&space;,v"/>の4変数であるが、出力もこの4変数であるとする。
 
 
- $x$ ：車両中心におけるグローバルなX座標
 
 
- $y$ ：車両中心におけるグローバルなY座標
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;x"/>：車両中心におけるグローバルなX座標
 
 
- $\theta$ ：車両の方位角（東向きの場合に0、反時計周りを正）
 
 
- $v$ ：車両速度
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;y"/>：車両中心におけるグローバルなY座標
 
 
-入力は $\delta ,T$ の2変数である。
 
 
- $\delta$ ：ステアリング角（反時計周りを正）
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;\theta"/>：車両の方位角（東向きの場合に0、反時計周りを正）
 
 
- $T$ ：スロットル
+
+
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;v"/>：車両速度
+
+
+  
+
+
+入力は<img src="https://latex.codecogs.com/gif.latex?\inline&space;\delta&space;,T"/>の2変数である。
+
+
+
+
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;\delta"/>：ステアリング角（反時計周りを正）
+
+
+
+
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;T"/>：スロットル
+
+
+  
 
 
 パラメータは以下である。
 
 
- $L$ ：車両の長さ（5[m]）
 
 
- $k$ ：スロットルから加速度へ換算する係数（0.5）
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;L"/>：車両の長さ（5[m]）
+
+
+
+
+<img src="https://latex.codecogs.com/gif.latex?\inline&space;k"/>：スロットルから加速度へ換算する係数（0.5）
+
+
+  
 
 
 上記の非線形モデルをノミナル点を基準に線形近似し（下記の線形モデル）、これを基にAdaptive MPC（適応MPC）を構成する。
 
 
- $$ \begin{array}{l} \dot{x} =-v\;\theta \;\sin \left(\theta \right)+v\;\cos \left(\theta \right)\\ \dot{y} =v\;\theta \;\cos \left(\theta \right)+v\;\sin \left(\theta \right)\\ \dot{\theta} =\frac{v\;\tan \left(\delta \right)}{L}+\frac{v\;\left(\tan^2 \left(\delta \right)+1\right)}{L}\delta \\ \dot{v} =k\cdot T \end{array} $$ 
+  
 
+<img src="https://latex.codecogs.com/gif.latex?\begin{array}{l}&space;\dot{x}&space;=-v\;\theta&space;\;\sin&space;\left(\theta&space;\right)+v\;\cos&space;\left(\theta&space;\right)\\&space;\dot{y}&space;=v\;\theta&space;\;\cos&space;\left(\theta&space;\right)+v\;\sin&space;\left(\theta&space;\right)\\&space;\dot{\theta}&space;=\frac{v\;\tan&space;\left(\delta&space;\right)}{L}+\frac{v\;\left(\tan^2&space;\left(\delta&space;\right)+1\right)}{L}\delta&space;\\&space;\dot{v}&space;=k\cdot&space;T&space;\end{array}"/>
+
+  
 # 走行シナリオ
 
+
 道路シチュエーションとして、３車線の中央を一定速度で走行中の自車前方（X = 50[m], Y = 0[m]）に静止している障害物（他車）があるとする。
+
+
 
 
 自車の車両コントローラー側では、自車のフードに内臓されたカメラセンサーにより前方の障害物を検知し、その結果をもってMPCコントローラーによって障害物の横を走行し、追い越して回避することを狙いとする。
 
 
+  
+
+
 本デモでは、Automated Driving Toolboxのドライビングシナリオデザイナーを利用し、運転シナリオを作成し、Simulinkと統合している。
+
+
 
 
 障害物の検知には、Vision Detection Generatorブロックを利用して、シナリオ環境上での障害物を検知し、判別アルゴリズムとともに、Adaptive MPC Controllerに対して衝突回避のための制約条件を与える。
 
 
+
+
 ![image_1.png](liveScriptForObstacleAvoid_md_media/image_1.png)
 
+
+  
 # 障害物回避の適応MPCの設計
-```matlab
+
+```matlab:Code
 % Assume all the states are measurable. 
 % At the nominal operating point, the ego car drives east at a constant speed of 20 meters per second.
 V = 20;
@@ -101,8 +152,10 @@ laneWidth = 4;
 DetectionDistance = 30;
 
 ```
+
 ## ノミナル点におけるMPCを設計
-```matlab
+
+```matlab:Code
 % Design a model predictive controller that can make the ego car maintain
 % a desired velocity and stay in the middle of the center lane.
 status = mpcverbosity('off');
@@ -182,36 +235,54 @@ setconstraint(mpcobj,[E1;E2;E3],[F1;F2;F3],[G1;G2;G3],[0.1;0.1;0.1]);
 refSignal = [0 0 0 V];
 
 ```
+
 # シミュレーションで確認
+
 
 モデルが起動したらSimulinkのツールストリップのシミュレーションタブ＞結果の確認にて鳥観図スコープを起動し、「信号の検索」を行った後、実行ボタンを押下してシミュレーションを開始する。
 
-```matlab
+
+
+```matlab:Code
 open_system(model_name);
 ```
 
+
+
 結果の波形をシミュレーションデータインスペクターで確認する。
 
-```matlab
+
+
+```matlab:Code
 sim(model_name);
 plot_obstacleAvoid_result_in_SDI;
 ```
 
+
+
 障害物を回避するため、Y方向の位置が指令値から離れていることがわかる。
+
 
 # コード生成
 
+
 Embedded Coder®を用いてコントローラをコード生成する。
 
-```matlab
+
+
+```matlab:Code
 return;
 slbuild(controller_name);
 ```
+
 # SIL検証
+
 
 SILモードでモデルとコードの等価性を調べる。
 
-```matlab
+
+
+```matlab:Code
 return;
 set_param([model_name, '/Perception & MPC Controller'], 'SimulationMode', 'Normal');
 sim(model_name);
@@ -219,9 +290,14 @@ set_param([model_name, '/Perception & MPC Controller'], 'SimulationMode', 'Softw
 sim(model_name);
 ```
 
+
+
 結果を比較する。
 
-```matlab
+
+
+```matlab:Code
 compare_previous_run(1);
 ```
+
 

@@ -1,13 +1,17 @@
-
 # 陽的MPCコントローラの設計と実装
+
 
 このサンプルでは、線形MPCの最適操作量uをテーブル参照で求めることで高速化を図る、"Explicit MPC Controller"を用いた設計の例を示す。
 
 
+
+
 また、設計後のCコード生成、SIL、PILの例も合わせて紹介する。
 
+
 # 初期化
-```matlab
+
+```matlab:Code
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 model_name = 'DCmotor_system_Explicit_MPC';
 lin_controller_name = 'Linear_MPC_Controller_for_DCmotor';
@@ -15,15 +19,24 @@ exp_controller_name = 'Explicit_MPC_Controller';
 ts = get_TimeStep('sim_data_DCmotor_system.sldd');
 
 ```
+
 # プラントモデルを定式化
+
 
 制御対象はDCモーターである。DCモーターの近似モデルを構築する。プラントモデルは、以下の文献を参考に構築している。
 
 
+
+
 [1] A. Bemporad, "Reference Governors: On-Line Set-Point Optimization Techniques for Constraint Fulfillment", Ph.D. dissertation, DSI, University of Florence, Italy, 1997.
 
+
 ### パラメータ定義
-```matlab
+
+\hfill \break
+
+
+```matlab:Code
 Lshaft = 1.0;                               % シャフト長さ
 dshaft = 0.02;                              % シャフト径
 shaftrho = 7850;                            % シャフトの密度 (炭素鋼)
@@ -53,8 +66,13 @@ JM = Jmotor;
 JL = Jload + Jshaft;
 
 ```
+
 ### 連続の状態空間モデルを定義
-```matlab
+
+\hfill \break
+
+
+```matlab:Code
 
 AA = [0             1             0                 0;
       -Kth/JL       -Bload/JL     Kth/(gear*JL)     0;
@@ -76,8 +94,10 @@ dc_motor_plant_sys.InputUnit = {'V'};
 dc_motor_plant_sys.OutputUnit = {'rad';'Nm'};
 ```
 
+  
 # MPCオブジェクトを作る
-```matlab
+
+```matlab:Code
 % プラントモデルの入出力のタイプを指定する
 plant = setmpcsignals(dc_motor_plant_sys, ...
                         'MV', 1, 'MO', 1, 'UO', 2);
@@ -86,7 +106,8 @@ plant = setmpcsignals(dc_motor_plant_sys, ...
 mpcObj = mpc(dc_motor_plant_sys, ts);
 ```
 
-```TextOutput
+
+```text:Output
 -->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
 -->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
 -->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
@@ -95,7 +116,8 @@ mpcObj = mpc(dc_motor_plant_sys, ts);
    for output(s) y1 and zero weight for output(s) y2 
 ```
 
-```matlab
+
+```matlab:Code
 
 % 予測ホライズン、制御ホライズンを指定する
 mpcObj.PredictionHorizon = 32;
@@ -122,20 +144,27 @@ mpcObj.Weights.ManipulatedVariables = 0;
 mpcObj.Weights.ManipulatedVariablesRate = 0.1;
 mpcObj.Weights.OutputVariables = [1, 0];
 ```
+
 ### 陽的MPCを構築
-```matlab
+
+\hfill \break
+
+
+```matlab:Code
 % レンジを取得する
 range = generateExplicitRange(mpcObj);
 ```
 
-```TextOutput
+
+```text:Output
 -->モデルを離散時間に変換します。
    測定出力チャネル #1 に外乱が追加されていないと仮定します。
 -->測定出力チャネル #2 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
 -->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
 ```
 
-```matlab
+
+```matlab:Code
 
 % 状態の最大最小を指定する
 range.State.Min(:) = -1000;
@@ -153,8 +182,10 @@ range.ManipulatedVariable.Max = mpcObj.ManipulatedVariables.Max + 1;
 mpcObjExplicit = generateExplicitMPC(mpcObj,range)
 ```
 
-```TextOutput
+
+```text:Output
 Regions found / unexplored:       89/       0
+
  
 Explicit MPC Controller
 ---------------------------------------------
@@ -171,55 +202,87 @@ Type 'mpcObjExplicit.PiecewiseAffineSolution' for regions and gain in each solut
 ```
 
 
+```matlab:Code
+
+```
+
 # シミュレーション
+
 
 モデルを実行して動作を確認する。
 
-```matlab
+
+
+```matlab:Code
 open_system(model_name);
 ```
 
+
+
 「controller_sw」で制御方式を切り替えられるようにしている。ここでは線形MPC制御と陽的MPC制御の比較を行う。
 
-```matlab
+
+
+```matlab:Code
 controller_sw = 1;
 sim(model_name);
 controller_sw = 2;
 sim(model_name);
 ```
 
+
+
 結果を比較する。
 
-```matlab
+
+
+```matlab:Code
 compare_previous_run(1);
 ```
+
 # コード生成
+
 
 Embedded Coder®によるコード生成結果を確認する。
 
-```matlab
+
+
+```matlab:Code
 return;
 slbuild(exp_controller_name);
 ```
 
+
+
 ここで、線形MPCと陽的MPCのCコードのメモリ消費量を比較する。
+
 
 ## 線形MPC
 
+
 ![image_0.png](Explicit_MPC_Design_md_media/image_0.png)
 
+
 ## 陽的MPC
+
 
 ![image_1.png](Explicit_MPC_Design_md_media/image_1.png)
 
 
+
+
 グローバル変数、累積スタックサイズ共に陽的MPCの方が消費が少ないことが分かる。
 
+
+  
 # SIL検証
+
 
 SILモードでモデルとコードの等価性を調べる。
 
-```matlab
+
+
+```matlab:Code
 return;
 controller_sw = 2;
 
@@ -229,36 +292,59 @@ set_param([model_name, '/Explicit_MPC_Controller'], 'SimulationMode', 'Software-
 sim(model_name);
 ```
 
+
+
 結果を比較する。
 
-```matlab
+
+
+```matlab:Code
 compare_previous_run(1);
 ```
 
+
+
 計算結果は必ずしも一致するわけではない。アルゴリズムの計算は浮動小数点で行われているため、例えば四則演算の計算順序が変わると結果が僅かに異なる場合がある。コード生成前後で四則演算の順序は変わる可能性がある。
 
+
 # PIL検証
+
 
 「Linear_MPC_Design.mlx」と同様に、STM32 Nucleo F401REを用いたPIL検証を行う。手順については、「Linear_MPC_Design.mlx」を参照。
 
 
+
+
 ここでは、線形MPCと陽的MPCの計算時間の比較を行う。
 
+
 ## 線形MPC
+
 
 ![image_2.png](Explicit_MPC_Design_md_media/image_2.png)
 
 
+
+
 ![image_3.png](Explicit_MPC_Design_md_media/image_3.png)
 
+
+  
 ## 陽的MPC
 
+
 ![image_4.png](Explicit_MPC_Design_md_media/image_4.png)
+
+
 
 
 ![image_5.png](Explicit_MPC_Design_md_media/image_5.png)
 
 
+  
+
+
 比較すると、過渡時は線形MPCの方が計算負荷が少なく、定常時は陽的MPCの方が計算負荷が少ないことが分かる。
+
 
 

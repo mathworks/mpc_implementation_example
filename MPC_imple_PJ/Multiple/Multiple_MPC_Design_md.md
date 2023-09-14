@@ -1,13 +1,17 @@
-
 # ゲインスケジュールMPCコントローラの設計と実装
+
 
 このサンプルでは、複数動作点で切り替える線形MPCを設計するブロック"Multiple MPC Controller"を用いた設計の例を示す。
 
 
+
+
 また、設計後のCコード生成、SIL、PILの例も合わせて紹介する。
 
+
 # 初期化
-```matlab
+
+```matlab:Code
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 proj = currentProject;
 create_ref_data;
@@ -17,12 +21,16 @@ standalone_plant_name = 'Vehicle_plant_model_sl';
 ts = get_TimeStep('sim_data_vehicle.sldd');
 
 ```
+
 # プラントモデルを定式化
 # 状態空間表現
 
+
 適応MPCと同一であるため、説明は省略する。詳細については「Adaptive_MPC_Design.mlx」を参照。
 
-```matlab
+
+
+```matlab:Code
 % 変数定義
 syms m u v r F_f F_r real;
 syms I l_f l_r v_dot r_dot V beta beta_dot real;
@@ -69,20 +77,31 @@ file_path = [char(proj.RootFolder), filesep, 'gen_script', filesep, 'calc_nonlin
 matlabFunction(h, 'File', file_path);
 insert_zero_divide_avoidance(file_path);
 ```
+
 # MPCのための定式化
+
 
 Multiple MPCは、非線形モデルを動作点ごとに線形化し、それぞれの動作点周りで線形モデル予測制御を行っている。ここでは、"linearize"というコマンドを用いて、それぞれの動作点周りの微小変化から線形近似を行う。
 
 
-動作点として、 $\theta \;$ と $V$ における以下のパターンの組み合わせを取る。その他の状態、入力はすべて0とする。
 
- $$ \theta :0,\;\frac{\pi }{2},\;\pi ,-\frac{\pi }{2} $$ 
 
- $$ V:1,2 $$ 
+動作点として、<img src="https://latex.codecogs.com/gif.latex?\inline&space;\theta&space;\;"/>と<img src="https://latex.codecogs.com/gif.latex?\inline&space;V"/>における以下のパターンの組み合わせを取る。その他の状態、入力はすべて0とする。
+
+
+
+<img src="https://latex.codecogs.com/gif.latex?\theta&space;:0,\;\frac{\pi&space;}{2},\;\pi&space;,-\frac{\pi&space;}{2}"/>
+
+
+<img src="https://latex.codecogs.com/gif.latex?V:1,2"/>
+
+
 
 この場合、以下の8通りの動作点が存在することになる。
 
-```matlab
+
+
+```matlab:Code
 op_pattern = [{[0; 1]}; {[0; 2]};
     {[pi/2; 1]}; {[pi/2; 2]};
     {[pi; 1]}; {[pi; 2]};
@@ -90,9 +109,13 @@ op_pattern = [{[0; 1]}; {[0; 2]};
     ];
 ```
 
+
+
 各動作点周りで状態方程式を線形化する。
 
-```matlab
+
+
+```matlab:Code
 % パラメータ
 m_val = 2000;
 l_f_val = 1.4;
@@ -122,14 +145,18 @@ for i = 1:numel(op_pattern)
 end
 sys_pattern
 ```
+
 | |1|2|3|4|5|6|7|8|
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 |1|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|5x2 ss|
 
 
+
 Multiple MPCに与えるMPCオブジェクトを各動作点で作成する。
 
-```matlab
+
+
+```matlab:Code
 yNum_MPC = size(Y, 1);
 mpcverbosity('off');
 
@@ -163,33 +190,45 @@ end
 
 mpcObj_multi
 ```
+
 | |1|2|3|4|5|6|7|8|
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 |1|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|2x5 mpc|
 
-```matlab
+
+```matlab:Code
 % 初期状態 (Multiple MPC Controller用)
 x0_multi = cell(1, numel(op_pattern))
 ```
+
 | |1|2|3|4|5|6|7|8|
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 |1|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|[ ]|
 
-```matlab
+
+```matlab:Code
 % 初期状態 (プラントモデル用)
 x0 = [0; 0; 0; 0; 0; 1];
 ```
 
+
+
 設計の妥当性確認
 
-```matlab
+
+
+```matlab:Code
 % review(mpcObj_multi{i});
 ```
+
 # シミュレーション
+
 
 モデルを実行して動作を確認する。
 
-```matlab
+
+
+```matlab:Code
 op_pattern_mat = cell2mat(op_pattern');
 
 open_system(model_name);
@@ -198,57 +237,92 @@ set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 sim(model_name);
 ```
 
+
+
 結果の表示
 
-```matlab
+
+
+```matlab:Code
 plot_vehicle_result_in_SDI;
 ```
 
+
+
 適応MPCと同じように、シナリオ"control_y_V"、
+
+
 
 
 "regular_circle_turn_vehicle"、"turn_vehicle"で実行し、動作を確認する。
 
 
+
+
 適応MPCと比較すると、動作点の切り替わりで応答が不連続に変化していることがわかる。
+
+
+  
 
 
 シナリオ"control_y_V"でのy位置の応答を、異なる予測区間で比較する。
 
 
+
+
 予測区間を調整するには、予測ホライズンを変えるか、制御のサンプリングタイムステップを変える方法がある。予測ホライズンを大きくする場合、それに応じて計算時間も増大してしまうため、ここではサンプリングタイムステップを大きくすることで予測区間を大きくする。
+
+
 
 
 デフォルトの設定の20msの応答は以下である。
 
 
+
+
 ![image_0.png](Multiple_MPC_Design_md_media/image_0.png)
+
+
 
 
 ここで、サンプリングタイムステップを20msから50msに変更する。モデルエクスプローラで「sim_data_vehicle.sldd」を開き、TimeStepを0.05に変更する。この変更を反映させるためには、このスクリプトの最初から実行しなおす必要がある。
 
 
+
+
 実行しなおすと、y位置の応答は以下のようになる。
+
+
 
 
 ![image_1.png](Multiple_MPC_Design_md_media/image_1.png)
 
 
+
+
 元々の予測区間はこのy位置の制御の応答と比較すると小さめであるため、大きく取ることで、オーバーシュートを減らすことができる。
+
 
 # コード生成
 
+
 Embedded Coder®コード生成結果を確認する。
 
-```matlab
+
+
+```matlab:Code
 return;
 slbuild(mul_controller_name);
 ```
+
 # SIL検証
+
 
 SILモードでモデルとコードの等価性を調べる。
 
-```matlab
+
+
+```matlab:Code
 return;
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 sim(model_name);
@@ -256,31 +330,50 @@ set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Software-in-the-Lo
 sim(model_name);
 ```
 
+
+
 結果を比較する。
 
-```matlab
+
+
+```matlab:Code
 compare_previous_run(1);
 ```
+
 # PIL検証
 
+
 「Linear_MPC_Design.mlx」と同様に、STM32 Nucleo F401REを用いたPIL検証を行う。手順については、「Linear_MPC_Design.mlx」を参照。
+
+
 
 
 結果は以下のようになった。
 
 
+
+
 ![image_2.png](Multiple_MPC_Design_md_media/image_2.png)
+
+
 
 
 ![image_3.png](Multiple_MPC_Design_md_media/image_3.png)
 
 
+
+
 1ステップ当たりの平均計算時間は4.06ms、CPU使用率は20.32%である。
+
+
 
 
 モデルとコードの実行の比較結果は以下のようになった。
 
 
+
+
 ![image_4.png](Multiple_MPC_Design_md_media/image_4.png)
+
 
 
