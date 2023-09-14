@@ -1,17 +1,13 @@
-# 非線形MPCコントローラの設計と実装
 
+# 非線形MPCコントローラの設計と実装
 
 このサンプルでは、非線形MPCを設計するブロック"Nonlinear MPC Controller"を用いた設計の例を示す。
 
 
-
-
 また、設計後のCコード生成、SILの例も合わせて紹介する。
 
-
 # 初期化
-
-```matlab:Code
+```matlab
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 system_model_name = 'Vehicle_system_Nonlinear_MPC';
 controller_model_name = 'Parking_NMPC_Controller';
@@ -26,49 +22,31 @@ ref_VALIANT_TT = Simulink.Variant('CTRL_MODE == 2');
 path_Tf = 60;      % パスを走行する時間
 ```
 
-  
 # プラントモデリング
-
 
 車両のモデルを考える。ここでは、最もシンプルな、x位置、y位置、z方向角度（ヨー角）のみを状態量に持つモデル（Kinematic Bicycle Model）とする。
 
 
+入力を車両の速度 $v$ 、ステアリング角度 $\delta$ 、状態をx位置 $p_x$ 、y位置 $p_y$ 、ヨー角 $\theta$ とすると、状態方程式は以下のようになる。
 
+ $$ \dot{p_x } =\cos \left(\theta \right)\cdot v $$ 
 
-入力を車両の速度<img src="https://latex.codecogs.com/gif.latex?\inline&space;v"/>、ステアリング角度<img src="https://latex.codecogs.com/gif.latex?\inline&space;\delta"/>、状態をx位置<img src="https://latex.codecogs.com/gif.latex?\inline&space;p_x"/>、y位置<img src="https://latex.codecogs.com/gif.latex?\inline&space;p_y"/>、ヨー角<img src="https://latex.codecogs.com/gif.latex?\inline&space;\theta"/>とすると、状態方程式は以下のようになる。
+ $$ \dot{p_y } =\sin \left(\theta \right)\cdot v $$ 
 
+ $$ \dot{\theta} =\frac{\tan \left(\delta \right)}{\;\textrm{WB}}\cdot v $$ 
 
-
-<img src="https://latex.codecogs.com/gif.latex?\dot{p_x&space;}&space;=\cos&space;\left(\theta&space;\right)\cdot&space;v"/>
-
-
-<img src="https://latex.codecogs.com/gif.latex?\dot{p_y&space;}&space;=\sin&space;\left(\theta&space;\right)\cdot&space;v"/>
-
-
-<img src="https://latex.codecogs.com/gif.latex?\dot{\theta}&space;=\frac{\tan&space;\left(\delta&space;\right)}{\;\textrm{WB}}\cdot&space;v"/>
-
-
-
-ただし、<img src="https://latex.codecogs.com/gif.latex?\inline&space;\textrm{WB}"/>は車両のホイールベースである。
-
-
+ただし、 $\textrm{WB}$ は車両のホイールベースである。
 
 
 上記のモデルでは、ヨー角が360°以上回転する場合、不連続に値が変化する。状態空間モデルとして不連続性が存在することは避けたいため、ヨー角をクオータニオンに置き換えることにする。出力（センサー計測）は、クオータニオンではなく、ヨー角で得られるとする。
 
 
-
-
-クオータニオンは<img src="https://latex.codecogs.com/gif.latex?\inline&space;\left(q_0&space;,q_1&space;,q_2&space;,q_3&space;\right)"/>の四つの変数で3次元の回転状態を表現する手法であるが、今回はヨー角のみであるため、<img src="https://latex.codecogs.com/gif.latex?\inline&space;\left(q_0&space;,q_3&space;\right)"/>の二変数のみで表現する。
-
-
+クオータニオンは $\left(q_0 ,q_1 ,q_2 ,q_3 \right)$ の四つの変数で3次元の回転状態を表現する手法であるが、今回はヨー角のみであるため、 $\left(q_0 ,q_3 \right)$ の二変数のみで表現する。
 
 
 上記のヨー角ベースの状態方程式をクオータニオンに置き換えながら、状態空間モデルをSymbolic Math Toolbox™で定式化する。
 
-
-
-```matlab:Code
+```matlab
 syms wb q0 q3 v delta px py dTime real;
 
 % ステアリング角度と速度からヨー角速度を求める
@@ -104,86 +82,60 @@ x = [px; py; q0; q3];
 u = [v; delta];
 ```
 
-
-
 Nonlinear MPC Controllerでは、動作点周りの線形化した状態方程式（ヤコビアンモデル）を導出することができれば、それを指定することで計算効率の向上と、動作の安定性を向上させることができる。
-
-
 
 
 今回は導出することができるので、以下のように求める。
 
-
-
-```matlab:Code
+```matlab
 Ac = jacobian(f, x)
 ```
-
 Ac = 
+ $\displaystyle \left(\begin{array}{cccc} 1 & 0 & 4\,\textrm{dTime}\,q_0 \,v & 0\\ 0 & 1 & 2\,\textrm{dTime}\,q_3 \,v & 2\,\textrm{dTime}\,q_0 \,v\\ 0 & 0 & \cos \left(\frac{\textrm{dTime}\,v\,\tan \left(\delta \right)}{2\,\textrm{wb}}\right) & -\sin \left(\frac{\textrm{dTime}\,v\,\tan \left(\delta \right)}{2\,\textrm{wb}}\right)\\ 0 & 0 & \sin \left(\frac{\textrm{dTime}\,v\,\tan \left(\delta \right)}{2\,\textrm{wb}}\right) & \cos \left(\frac{\textrm{dTime}\,v\,\tan \left(\delta \right)}{2\,\textrm{wb}}\right) \end{array}\right)$
+ 
 
-   <img src="https://latex.codecogs.com/gif.latex?&space;\left(\begin{array}{cccc}&space;1&space;&&space;0&space;&&space;4\,\textrm{dTime}\,q_0&space;\,v&space;&&space;0\\&space;0&space;&&space;1&space;&&space;2\,\textrm{dTime}\,q_3&space;\,v&space;&&space;2\,\textrm{dTime}\,q_0&space;\,v\\&space;0&space;&&space;0&space;&&space;\cos&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)&space;&&space;-\sin&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)\\&space;0&space;&&space;0&space;&&space;\sin&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)&space;&&space;\cos&space;\left(\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}\right)&space;\end{array}\right)"/>
-
-```matlab:Code
+```matlab
 Bc = jacobian(f, u)
 ```
-
 Bc = 
+ $\displaystyle \begin{array}{l} \left(\begin{array}{cc} \textrm{dTime}\,{\left(2\,{q_0 }^2 -1\right)} & 0\\ 2\,\textrm{dTime}\,q_0 \,q_3  & 0\\ -\frac{\textrm{dTime}\,q_3 \,\cos \left(\sigma_2 \right)\,\tan \left(\delta \right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_0 \,\sin \left(\sigma_2 \right)\,\tan \left(\delta \right)}{2\,\textrm{wb}} & -\frac{\textrm{dTime}\,q_3 \,v\,\cos \left(\sigma_2 \right)\,\sigma_1 }{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_0 \,v\,\sin \left(\sigma_2 \right)\,\sigma_1 }{2\,\textrm{wb}}\\ \frac{\textrm{dTime}\,q_0 \,\cos \left(\sigma_2 \right)\,\tan \left(\delta \right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3 \,\sin \left(\sigma_2 \right)\,\tan \left(\delta \right)}{2\,\textrm{wb}} & \frac{\textrm{dTime}\,q_0 \,v\,\cos \left(\sigma_2 \right)\,\sigma_1 }{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3 \,v\,\sin \left(\sigma_2 \right)\,\sigma_1 }{2\,\textrm{wb}} \end{array}\right)\\\mathrm{}\\\textrm{where}\\\mathrm{}\\\;\;\sigma_1 ={\tan \left(\delta \right)}^2 +1\\\mathrm{}\\\;\;\sigma_2 =\frac{\textrm{dTime}\,v\,\tan \left(\delta \right)}{2\,\textrm{wb}}\end{array}$
+ 
 
-   <img src="https://latex.codecogs.com/gif.latex?&space;\begin{array}{l}&space;\left(\begin{array}{cc}&space;\textrm{dTime}\,{\left(2\,{q_0&space;}^2&space;-1\right)}&space;&&space;0\\&space;2\,\textrm{dTime}\,q_0&space;\,q_3&space;&space;&&space;0\\&space;-\frac{\textrm{dTime}\,q_3&space;\,\cos&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_0&space;\,\sin&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;&&space;-\frac{\textrm{dTime}\,q_3&space;\,v\,\cos&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_0&space;\,v\,\sin&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}\\&space;\frac{\textrm{dTime}\,q_0&space;\,\cos&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3&space;\,\sin&space;\left(\sigma_2&space;\right)\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;&&space;\frac{\textrm{dTime}\,q_0&space;\,v\,\cos&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}-\frac{\textrm{dTime}\,q_3&space;\,v\,\sin&space;\left(\sigma_2&space;\right)\,\sigma_1&space;}{2\,\textrm{wb}}&space;\end{array}\right)\\&space;\mathrm{}\\&space;\textrm{where}\\&space;\mathrm{}\\&space;\;\;\sigma_1&space;={\tan&space;\left(\delta&space;\right)}^2&space;+1\\&space;\mathrm{}\\&space;\;\;\sigma_2&space;=\frac{\textrm{dTime}\,v\,\tan&space;\left(\delta&space;\right)}{2\,\textrm{wb}}&space;\end{array}"/>
-
-```matlab:Code
+```matlab
 file_path = [char(proj.RootFolder), filesep, 'gen_script', filesep, 'calc_Ac.m'];
 matlabFunction(Ac, 'File', file_path);
 file_path = [char(proj.RootFolder), filesep, 'gen_script', filesep, 'calc_Bc.m'];
 matlabFunction(Bc, 'File', file_path);
 ```
 
-
-
 今回の例では、プラントモデルの状態空間モデルと、MPCコントローラ内予測モデルの状態空間モデルの出力変数が異なっている点に注意すること。
-
-
 
 
 プラントモデルではx位置、y位置、ヨー角であるが、予測モデルではx位置、y位置、クオータニオンである。
 
 
-
-
 従って、「Nonlinear MPC Controller」ブロックに入力する前にヨー角からクオータニオンに変換する処理を行っている。「[Parking_NMPC_Controller.slx](http://parking_nmpc_controller)」を参照。
 
-
 # パスプランニング
-
 
 今回の例で走行させる経路は、"office_area_gridmap.mat"に保存されている、オフィスの廊下を解析した占有グリッドから生成する。経路は、高次元空間で高速に経路が生成できるRapidly-exploring Random Tree (RRT) を用いて算出する。
 
 
-
-
 RRTについては、本例題のテーマと異なるため、ここでは解説しない。詳細については、「[Plan Mobile Robot Paths using RRT](https://jp.mathworks.com/help/nav/ug/plan-mobile-robot-paths-using-rrt.html)」を参照。
 
-
-
-```matlab:Code
+```matlab
 start_pos = [-1.0, 0.0, -pi];
 goal_pos  = [14, -2.25, 0];
 pthObj = plan_MobileRobotPaths_using_RRT(Ts, path_Tf, start_pos, goal_pos);
 ```
 
+![figure_0.png](Nonlinear_MPC_design_md_media/figure_0.png)
 
-![figure_0.png](Nonlinear_MPC_design_md_images/figure_0.png)
-
-
-![figure_1.png](Nonlinear_MPC_design_md_images/figure_1.png)
-
-
+![figure_1.png](Nonlinear_MPC_design_md_media/figure_1.png)
 
 生成された経路をx位置、y位置、ヨー角でそれぞれグラフ化する。
 
-
-
-```matlab:Code
+```matlab
 figure;
 tiledlayout(3, 1);
 nexttile;
@@ -197,17 +149,12 @@ plot(pthObj.States(:,3));
 ylabel('ヨー角[rad]');
 ```
 
-
-![figure_2.png](Nonlinear_MPC_design_md_images/figure_2.png)
-
+![figure_2.png](Nonlinear_MPC_design_md_media/figure_2.png)
 # MPCの設計
-
 
 非線形MPCのオブジェクトを構築する。
 
-
-
-```matlab:Code
+```matlab
 mpcverbosity('off');
 
 % 「nlmpc」コマンドで状態数、出力数、入力数を引数にしてオブジェクトを作成する。
@@ -244,13 +191,9 @@ nlMPCObj.Model.IsContinuousTime = false;
 nlMPCObj.Optimization.CustomEqConFcn = "parkingTerminalConFcn";
 ```
 
-
-
 ここで、コントローラ（nlmpc）が正しく設定されているかを確認する。
 
-
-
-```matlab:Code
+```matlab
 % パラメータ
 wheel_base = 2.8;
 
@@ -262,8 +205,7 @@ params = {wheel_base; Ts};
 validateFcns(nlMPCObj,x0,u0,[],params);
 ```
 
-
-```text:Output
+```TextOutput
 Model.StateFcn is OK.
 Jacobian.StateFcn is OK.
 Model.OutputFcn is OK.
@@ -271,18 +213,12 @@ Optimization.CustomEqConFcn is OK.
 ユーザー指定のモデル、コストおよび制約関数の解析が完了しました。
 ```
 
-
-
 Nonlinear MPCは、現時点では実時間の計算に不向きであり、Simulink実行においても時間がかかる場合が多い。そこで、MEXにコンパイルすることで、シミュレーションの実行時間を改善させることができる。MEX化するには、事前にMEXコンパイラが設定されていなければならない。詳細については、「[Supported and Compatible Compilers](https://jp.mathworks.com/support/requirements/supported-compilers.html)」を参照。
-
-
 
 
 MEX化する場合は以下のuse_nlmpc_mexをtrueに、しない場合はfalseにすること。
 
-
-
-```matlab:Code
+```matlab
 use_nlmpc_mex = false;
 open_system(controller_model_name);
 if (use_nlmpc_mex)
@@ -298,13 +234,9 @@ end
 save_system(controller_model_name);
 ```
 
-
-
 パスプランニングで生成した指令値のヨー角をクオータニオンに変換する。また、指令値の与え方を、毎回のサンプリング時間ごとに、1点で与えるか、予測ホライズン分の長さの参照軌道で与えるか、をここで選択する。
 
-
-
-```matlab:Code
+```matlab
 nl_ref_signal_MAT = convert_theta_to_q_vec(pthObj.States);
 
 set_slddVal('sim_data_vehicle_nl.sldd', 'NLMPC_Hp', ...
@@ -326,57 +258,38 @@ else
 end
 ```
 
-  
 # シミュレーション
-
 
 シミュレーションを実行し、結果を確認する。
 
-
-
-```matlab:Code
+```matlab
 open_system(system_model_name);
 sim(system_model_name);
 plot_vehicle_nl_result_in_SDI;
 ```
 
-
-
 以下のように、参照軌道に沿って走行できていることがわかる。（以下の図の1行1列目のグラフはXYプロットである。）
 
 
-
-
-![image_0.png](Nonlinear_MPC_design_md_images/image_0.png)
-
-
+![image_0.png](Nonlinear_MPC_design_md_media/image_0.png)
 
 
 CTRL_MODEを変更し、1点のみを指定する場合にしてシミュレーションを行い、結果の違いを確認すること。
 
-
-  
 # コード生成
-
 
 Embedded Coder®によるコード生成結果を確認する。
 
-
-
-```matlab:Code
+```matlab
 return;
 slbuild(controller_model_name);
 ```
 
-  
 # SIL検証
-
 
 SILモードでモデルとコードの等価性を調べる。
 
-
-
-```matlab:Code
+```matlab
 return;
 set_param([system_model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 sim(system_model_name);
@@ -384,50 +297,31 @@ set_param([system_model_name, '/MPC_Controller'], 'SimulationMode', 'Software-in
 sim(system_model_name);
 ```
 
-
-
 結果を比較する。
 
-
-
-```matlab:Code
+```matlab
 compare_previous_run(1);
 ```
 
-
-
 計算結果は必ずしも一致するわけではない。アルゴリズムの計算は浮動小数点で行われているため、例えば四則演算の計算順序が変わると結果が僅かに異なる場合がある。コード生成前後で四則演算の順序は変わる可能性がある。
-
 
 # PIL検証
 
-
 マルチステージの非線形MPCの計算時間を測定する。本節では、例としてRaspberry Pi 3 Model B+を用いたPIL検証を行う。性能は以下の通りである。
 
-
-
-   -  CPU: 64-bit quad-core ARM Cortex-A53 
-   -  Clock: 1.4GHz 
-   -  RAM: 1GB 
-
-
+-  CPU: 64-bit quad-core ARM Cortex-A53 
+-  Clock: 1.4GHz 
+-  RAM: 1GB 
 
 PIL検証の手順は使用する環境に依存しているため、本節ではコードを用いた説明は行わない。主な作業手順については、「Linear_MPC_Design.mlx」を参照。
 
 
+![image_1.png](Nonlinear_MPC_design_md_media/image_1.png)
 
 
-![image_1.png](Nonlinear_MPC_design_md_images/image_1.png)
-
-
-
-
-![image_2.png](Nonlinear_MPC_design_md_images/image_2.png)
-
-
+![image_2.png](Nonlinear_MPC_design_md_media/image_2.png)
 
 
 1ステップ当たりの平均計算時間は383ms、CPU使用率は383%である。
-
 
 
