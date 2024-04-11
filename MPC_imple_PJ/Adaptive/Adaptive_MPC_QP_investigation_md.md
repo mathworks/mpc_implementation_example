@@ -1,22 +1,16 @@
+
 # 適応MPCコントローラのQPソルバーの設定について検討
 
-
 このサンプルでは、適応MPCを設計するブロック"Adaptive MPC Controller"を用いた設計の例を示す。
-
-
 
 
 最適化のソルバーとして、アクティブセット法と内点法の違いについて確認する。
 
 
-
-
 また、設計後のCコード生成、SIL、PILの例も合わせて紹介する。
 
-
 # 初期化
-
-```matlab:Code
+```matlab
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 proj = currentProject;
 create_ref_data;
@@ -25,17 +19,13 @@ ada_controller_name = 'Adaptive_MPC_Controller';
 ts = get_TimeStep('sim_data_vehicle.sldd');
 
 ```
-
 # プラントモデルを定式化
 # 状態空間表現
 # MPCのための定式化
 
+「Adaptive\_MPC\_Design.mlx」と同一であるため、説明は省略する。
 
-「Adaptive_MPC_Design.mlx」と同一であるため、説明は省略する。
-
-
-
-```matlab:Code
+```matlab
 % 変数定義
 syms m u v r F_f F_r real;
 syms I l_f l_r v_dot r_dot V beta beta_dot real;
@@ -116,18 +106,13 @@ dsys.StateName = state_names;
 dsys.OutputName = output_names;
 ```
 
-
-
 Adaptive MPCを用いたMPC制御器を構成する。
 
-
-
-```matlab:Code
+```matlab
 mpcObj = mpc(dsys);
 ```
 
-
-```text:Output
+```matlabTextOutput
 -->"mpc" オブジェクトの "PredictionHorizon" プロパティが空です。PredictionHorizon = 10 を試用します。
 -->"mpc" オブジェクトの "ControlHorizon" プロパティが空です。2 であると仮定します。
 -->"mpc" オブジェクトの "Weights.ManipulatedVariables" プロパティが空です。既定の 0.00000 を仮定します。
@@ -136,8 +121,7 @@ mpcObj = mpc(dsys);
    for output(s) y1 y2 and zero weight for output(s) y3 y4 y5 
 ```
 
-
-```matlab:Code
+```matlab
 solverType = 2;
 if (solverType == 1)
     % QPソルバーをアクティブセット法に指定する
@@ -183,27 +167,20 @@ mpcObj.Weights.ManipulatedVariablesRate = [0.0, 0.0];
 
 ```
 
-
-
 設計の妥当性確認
 
-
-
-```matlab:Code
+```matlab
 % review(mpcObj)
 ```
-
 # シミュレーション
-
-```matlab:Code
+```matlab
 open_system(model_name);
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 % set_param(modelName, 'SimulationCommand', 'update');
 sim(model_name);
 ```
 
-
-```text:Output
+```matlabTextOutput
    測定出力チャネル #1 に外乱が追加されていないと仮定します。
    測定出力チャネル #2 に外乱が追加されていないと仮定します。
 -->測定出力チャネル #5 に追加された出力外乱は、合成ホワイト ノイズであると仮定します。
@@ -212,68 +189,42 @@ sim(model_name);
 -->"mpc" オブジェクトの "Model.Noise" プロパティが空です。それぞれの測定出力チャネルにホワイト ノイズを仮定します。
 ```
 
-
-
 結果の表示
 
-
-
-```matlab:Code
+```matlab
 plot_vehicle_result_in_SDI;
 ```
-
-
 
 アクティブセット法と内点法で結果を比較してみること。
 
 
-
-
 現時点では、"UseSuboptimalSolution"のオプションは内点法では機能していない。
 
-
-  
 # コード生成
-
 
 Embedded Coder®コード生成結果を確認する。
 
-
-
-```matlab:Code
+```matlab
 return;
 slbuild(ada_controller_name);
 ```
 
-
-   -  内点法の場合 
-
-
+-  内点法の場合 
 
 ![image_0.png](Adaptive_MPC_QP_investigation_md_media/image_0.png)
 
-
-
-   -  アクティブセット法の場合 
-
-
+-  アクティブセット法の場合 
 
 ![image_1.png](Adaptive_MPC_QP_investigation_md_media/image_1.png)
 
 
-
-
 内点法とアクティブセット法でグローバル変数とスタックサイズの消費に差は無いことが分かる。
-
 
 # SIL検証
 
-
 SILモードでモデルとコードの等価性を調べる。
 
-
-
-```matlab:Code
+```matlab
 return;
 set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 sim(model_name);
@@ -281,45 +232,28 @@ set_param([model_name, '/MPC_Controller'], 'SimulationMode', 'Software-in-the-Lo
 sim(model_name);
 ```
 
-
-
 結果を比較する。
 
-
-
-```matlab:Code
+```matlab
 compare_previous_run(1);
 ```
-
 # PIL検証
 
-
-「Linear_MPC_Design.mlx」と同様に、STM32 Nucleo F401REを用いたPIL検証を行う。手順については、「Linear_MPC_Design.mlx」を参照。
-
-
+「Linear\_MPC\_Design.mlx」と同様に、STM32 Nucleo F401REを用いたPIL検証を行う。手順については、「Linear\_MPC\_Design.mlx」を参照。
 
 
 ![image_2.png](Adaptive_MPC_QP_investigation_md_media/image_2.png)
 
 
-
-
 ![image_3.png](Adaptive_MPC_QP_investigation_md_media/image_3.png)
-
-
 
 
 1ステップ当たりの平均計算時間は60.5ms、CPU使用率は302.5%である。アクティブセット法と比較して、計算時間にあまり差はないことが分かる。
 
 
-
-
 モデルとコードの実行の比較結果は以下のようになった。
 
 
-
-
 ![image_4.png](Adaptive_MPC_QP_investigation_md_media/image_4.png)
-
 
 

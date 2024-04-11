@@ -1,24 +1,18 @@
-# マルチステージ非線形MPCの設計と実装
 
+# マルチステージ非線形MPCの設計と実装
 
 このサンプルでは、非線形MPCを設計するブロック"Multistage Nonlinear MPC"を用いた設計の例を示す。
 
 
-
-
 また、設計後のCコード生成、SIL、PILの例も合わせて紹介する。
-
 
 # 初期化
 # プラントモデリング
 # パスプランニング
 
+本セクションは「Nonlinear\_MPC\_design.mlx」と同一であるため、説明は省略する。
 
-本セクションは「Nonlinear_MPC_design.mlx」と同一であるため、説明は省略する。
-
-
-
-```matlab:Code
+```matlab
 clc; Simulink.sdi.clear; Simulink.sdi.clearPreferences; Simulink.sdi.close;
 system_model_name = 'Vehicle_system_Nonlinear_MPC';
 controller_model_name = 'Parking_NMPC_MultiStage_Controller';
@@ -79,20 +73,14 @@ goal_pos  = [14, -2.25, 0];
 pthObj = plan_MobileRobotPaths_using_RRT(Ts, path_Tf, start_pos, goal_pos);
 ```
 
-
 ![figure_0.png](Nonlinear_MultiStage_MPC_design_md_media/figure_0.png)
 
-
 ![figure_1.png](Nonlinear_MultiStage_MPC_design_md_media/figure_1.png)
-
 # MPCの設計
-
 
 マルチステージの非線形MPCのオブジェクトを構築する。
 
-
-
-```matlab:Code
+```matlab
 mpcverbosity('off');
 
 % 予測ホライズンを指定する。
@@ -139,24 +127,16 @@ weight_mv = [0, 0];
 weight_dmv = [0.05, 0.05];
 ```
 
-
-
 ここで、最大反復計算回数を指定する。反復回数の上限を指定することで、計算時間を効率化でき、リアルタイム実行のための計算時間の見積もりが可能になる。
 
-
-
-```matlab:Code
+```matlab
 nlMPCObj.Optimization.UseSuboptimalSolution = true;
 nlMPCObj.Optimization.SolverOptions.MaxIterations = 20;
 ```
 
-
-
 ここで、コントローラ（nlmpc）が正しく設定されているかを確認する。
 
-
-
-```matlab:Code
+```matlab
 % パラメータ
 wheel_base = 2.8;
 
@@ -169,8 +149,7 @@ simdata.StateFcnParameter = [wheel_base; Ts];
 validateFcns(nlMPCObj, x0, u0, simdata);
 ```
 
-
-```text:Output
+```matlabTextOutput
 Model.StateFcn is OK.
 Model.StateJacFcn is OK.
 "CostFcn" of the following stages [1 2 3 4 5 6 7 8 9 10] are OK.
@@ -178,13 +157,9 @@ Model.StateJacFcn is OK.
 ユーザー指定のモデル、コストおよび制約関数の解析が完了しました。
 ```
 
-
-
 パスプランニングで生成した指令値のヨー角をクオータニオンに変換する。マルチステージのMPCでは、制御ホライズンは予測ホライズンと同一であるので、参照軌道で与えることにする。
 
-
-
-```matlab:Code
+```matlab
 nl_ref_signal_MAT = convert_theta_to_q_vec(pthObj.States);
 set_slddVal('sim_data_vehicle_nl.sldd', 'NLMPC_Hp', ...
             nlMPCObj.PredictionHorizon);
@@ -193,42 +168,30 @@ set_slddVal('sim_data_vehicle_nl.sldd', 'refNum', ...
     nlMPCObj.PredictionHorizon);
 ```
 
-  
 # シミュレーション
-
 
 シミュレーションを実行し、結果を確認する。
 
-
-
-```matlab:Code
+```matlab
 open_system(system_model_name);
 sim(system_model_name);
 plot_vehicle_nl_result_in_SDI;
 ```
 
-  
 # コード生成
-
 
 Embedded Coder®によるコード生成結果を確認する。
 
-
-
-```matlab:Code
+```matlab
 return;
 slbuild(controller_model_name);
 ```
 
-  
 # SIL検証
-
 
 SILモードでモデルとコードの等価性を調べる。
 
-
-
-```matlab:Code
+```matlab
 return;
 set_param([system_model_name, '/MPC_Controller'], 'SimulationMode', 'Normal');
 sim(system_model_name);
@@ -236,51 +199,22 @@ set_param([system_model_name, '/MPC_Controller'], 'SimulationMode', 'Software-in
 sim(system_model_name);
 ```
 
-
-
 結果を比較する。
 
-
-
-```matlab:Code
+```matlab
 compare_previous_run(1);
 ```
 
-
-
 計算結果は必ずしも一致するわけではない。アルゴリズムの計算は浮動小数点で行われているため、例えば四則演算の計算順序が変わると結果が僅かに異なる場合がある。コード生成前後で四則演算の順序は変わる可能性がある。
 
-
-  
 # PIL検証
-
 
 マルチステージの非線形MPCの計算時間を測定する。本節では、例としてRaspberry Pi 3 Model B+を用いたPIL検証を行う。性能は以下の通りである。
 
+-  CPU: 64\-bit quad\-core ARM Cortex\-A53 
+-  Clock: 1.4GHz 
+-  RAM: 1GB 
 
-
-   -  CPU: 64-bit quad-core ARM Cortex-A53 
-   -  Clock: 1.4GHz 
-   -  RAM: 1GB 
-
-
-
-PIL検証の手順は使用する環境に依存しているため、本節ではコードを用いた説明は行わない。主な作業手順については、「Linear_MPC_Design.mlx」を参照。
-
-
-
-
-![image_0.png](Nonlinear_MultiStage_MPC_design_md_media/image_0.png)
-
-
-
-
-![image_1.png](Nonlinear_MultiStage_MPC_design_md_media/image_1.png)
-
-
-
-
-1ステップ当たりの平均計算時間は285.4ms、CPU使用率は285.4%である。
-
+PIL検証の手順は使用する環境に依存しているため、本節ではコードを用いた説明は行わない。主な作業手順については、「Linear\_MPC\_Design.mlx」を参照。
 
 
