@@ -76,11 +76,9 @@ Multiple MPCは、非線形モデルを動作点ごとに線形化し、それ�
 
 動作点として、 $\theta \;$ と $V$ における以下のパターンの組み合わせを取る。その他の状態、入力はすべて0とする。
 
- <center><img src="https://latex.codecogs.com/svg.latex?\theta&space;:0,\;\frac{\pi&space;}{2},\;\pi&space;,-\frac{\pi&space;}{2}"/></center>
- 
+ $$ \theta :0,\;\frac{\pi }{2},\;\pi ,-\frac{\pi }{2} $$ 
 
- <center><img src="https://latex.codecogs.com/svg.latex?V:1,2"/></center>
- 
+ $$ V:1,2 $$ 
 
 この場合、以下の8通りの動作点が存在することになる。
 

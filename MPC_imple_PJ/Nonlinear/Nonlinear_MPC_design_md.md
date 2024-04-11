@@ -29,14 +29,11 @@ path_Tf = 60;      % パスを走行する時間
 
 入力を車両の速度 $v$ 、ステアリング角度 $\delta$ 、状態をx位置 $p_x$ 、y位置 $p_y$ 、ヨー角 $\theta$ とすると、状態方程式は以下のようになる。
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{p_x&space;}&space;=\cos&space;\left(\theta&space;\right)\cdot&space;v"/></center>
- 
+ $$ \dot{p_x } =\cos \left(\theta \right)\cdot v $$ 
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{p_y&space;}&space;=\sin&space;\left(\theta&space;\right)\cdot&space;v"/></center>
- 
+ $$ \dot{p_y } =\sin \left(\theta \right)\cdot v $$ 
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{\theta}&space;=\frac{\tan&space;\left(\delta&space;\right)}{\;\textrm{WB}}\cdot&space;v"/></center>
- 
+ $$ \dot{\theta} =\frac{\tan \left(\delta \right)}{\;\textrm{WB}}\cdot v $$ 
 
 ただし、 $\textrm{WB}$ は車両のホイールベースである。
 

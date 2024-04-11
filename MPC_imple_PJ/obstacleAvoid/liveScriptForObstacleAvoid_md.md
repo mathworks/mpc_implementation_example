@@ -19,8 +19,7 @@ Ts = get_TimeStep('obstacleAvoidance_data.sldd');
 自車の車両モデルは、長方形（５×２\[m\]）の形状とし、下記の単純な非線形モデルとして想定する。
 
 
- <center><img src="https://latex.codecogs.com/svg.latex?\begin{array}{l}&space;\dot{x}&space;=v\;\cos&space;\left(\theta&space;\right)\newline&space;\dot{y}&space;=v\;\sin&space;\left(\theta&space;\right)\newline&space;\dot{\theta}&space;=\frac{v\;\tan&space;\left(\delta&space;\right)}{L}\newline&space;\dot{v}&space;=k\cdot&space;T&space;\end{array}"/></center>
- 
+ $$ \begin{array}{l} \dot{x} =v\;\cos \left(\theta \right)\newline \dot{y} =v\;\sin \left(\theta \right)\newline \dot{\theta} =\frac{v\;\tan \left(\delta \right)}{L}\newline \dot{v} =k\cdot T \end{array} $$ 
 
 
 状態は $x,y,\theta ,v$ の4変数であるが、出力もこの4変数であるとする。
@@ -59,8 +58,7 @@ Ts = get_TimeStep('obstacleAvoidance_data.sldd');
 上記の非線形モデルをノミナル点を基準に線形近似し（下記の線形モデル）、これを基にAdaptive MPC（適応MPC）を構成する。
 
 
- <center><img src="https://latex.codecogs.com/svg.latex?\begin{array}{l}&space;\dot{x}&space;=-v\;\theta&space;\;\sin&space;\left(\theta&space;\right)+v\;\cos&space;\left(\theta&space;\right)\newline&space;\dot{y}&space;=v\;\theta&space;\;\cos&space;\left(\theta&space;\right)+v\;\sin&space;\left(\theta&space;\right)\newline&space;\dot{\theta}&space;=\frac{v\;\tan&space;\left(\delta&space;\right)}{L}+\frac{v\;\left(\tan^2&space;\left(\delta&space;\right)+1\right)}{L}\delta&space;\newline&space;\dot{v}&space;=k\cdot&space;T&space;\end{array}"/></center>
- 
+ $$ \begin{array}{l} \dot{x} =-v\;\theta \;\sin \left(\theta \right)+v\;\cos \left(\theta \right)\newline \dot{y} =v\;\theta \;\cos \left(\theta \right)+v\;\sin \left(\theta \right)\newline \dot{\theta} =\frac{v\;\tan \left(\delta \right)}{L}+\frac{v\;\left(\tan^2 \left(\delta \right)+1\right)}{L}\delta \newline \dot{v} =k\cdot T \end{array} $$ 
 
 # 走行シナリオ
 

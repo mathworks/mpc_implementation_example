@@ -58,8 +58,7 @@ eq_2 =
 
 速度を一定と仮定すると、 $\dot{v}$ は以下のようになる。
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{v}&space;=V\dot{\beta}&space;\;"/></center>
- 
+ $$ \dot{v} =V\dot{\beta} \; $$ 
 
 これらの関係を用いると、eq\_1は、以下のように書き直すことができる。
 
@@ -172,22 +171,18 @@ Y = [px; py; theta; r; V];
 
 連続非線形の状態方程式 $\dot{X} =f\left(X,U\right)$ の $f$ を作る。
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{x}&space;=\textrm{Vsin}\theta"/></center>
- 
+ $$ \dot{x} =\textrm{Vsin}\theta $$ 
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{y}&space;=\textrm{Vcos}\theta&space;\;"/></center>
- 
+ $$ \dot{y} =\textrm{Vcos}\theta \; $$ 
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{\theta}&space;=r"/></center>
- 
+ $$ \dot{\theta} =r $$ 
 
  $\dot{r} =$ sol\_vec.r\_dot
 
 
  $\dot{\beta} =$ sol\_vec.beta\_dot
 
- <center><img src="https://latex.codecogs.com/svg.latex?\dot{V}&space;=a"/></center>
- 
+ $$ \dot{V} =a $$ 
 
 よって、
 
