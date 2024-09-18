@@ -354,7 +354,7 @@ eig(clsys)
 ```
 
 ```matlabTextOutput
-ans = 11x1 complex    
+ans = 11x1 complex
    0.3215 + 0.3400i
    0.3215 - 0.3400i
    0.9496 + 0.0000i
